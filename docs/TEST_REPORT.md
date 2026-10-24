@@ -14,7 +14,7 @@
 | 语音文字 / Dictation | 合成服务回调验证结果预览、追加和取消；荣耀检测到服务但没有识别Activity / Synthetic callbacks verify review, append and cancellation; Honor exposes a service but no recognition Activity |
 | 备份 / Backup | 原有JSON与完整ZIP，默认冲突跳过、ID合并、仅录音日期、损坏和路径拒绝、数据库失败回滚及文件清理 / JSON/ZIP, conflicts, ID merge, audio-only dates, corruption/path rejection and rollback |
 | Release | 生产包名、版本5、R8构建和Lint通过；非Debug；兼容原轮换签名 / Production ID/code5, minified build and lint passed; non-debuggable; compatible rotation signer |
-| GitHub / 安装 / Delivery | 本报告提交时等待发布、下载及覆盖安装；最终结果会追加 / Publication, download and installation pending at this report commit; final results will be appended |
+| GitHub / 安装 / Delivery | 已公开测试发行，三个附件均上传并重新下载核对；荣耀90覆盖升级版本5，安装APK与公开下载字节相同 / Pre-release and all three assets published/downloaded/verified; Honor 90 upgraded to code5, installed bytes match the public APK |
 
 证据 / Evidence: [完整回归](logs/v050-regression.txt)、[JVM](logs/v050-unit-tests.txt)、[签名](logs/v050-release-signature.txt)、[编辑与音频](EDITING_AND_AUDIO.md)。APK SHA-256: `0dd9b012f9bf5fe30da6122e1aa76e8f096d6302ff099b87abf8f7d0cb11448b`。
 
@@ -31,3 +31,16 @@ Repaired issues include squeezed landscape editing, missing accessible names, ou
 Live microphone capture, system recognition accuracy/network behavior, live Google authorization/sync, other manufacturers, full spoken TalkBack and actual midnight/reboot/long-term power behavior remain unverified. Service discovery and synthetic tests do not establish those results.
 
 历史报告 / Earlier reports: [v0.4](TEST_REPORT_0_4_0.md)、[v0.3](TEST_REPORT_0_3_0.md)。
+
+## 最终交付 / Final delivery — 2026-10-25
+
+- [公开测试发行 / Public pre-release](https://github.com/cui039969-png/cc/releases/tag/v0.5.0-beta.1)，release ID 422876332，draft=false，prerelease=true。APK、对应源码ZIP、SHA256SUMS三个附件已上传，旧版本未覆盖。
+- 固定标签 / Immutable tag: `a70338c9d2b3797959f5e9bdfa4c862e01e2657d`。源码ZIP的181个文件按Git换行规则逐项匹配该提交 / All181 source files match the tag under Git line-ending rules.
+- APK SHA-256: `0dd9b012f9bf5fe30da6122e1aa76e8f096d6302ff099b87abf8f7d0cb11448b`。
+- Source ZIP SHA-256: `22eb94cbe97a698c40db0fef06eda4010b1f7785bda578ca7e98286bcc9542af`。
+- [云端源码构建检查 / Hosted checks](https://github.com/cui039969-png/cc/actions/runs/40114539308)已完成success，包含源码扫描、Debug/测试APK/Release构建、JVM和Lint / Completed successfully: source scan, Debug/test/Release builds, JVM and lint.
+- 荣耀90使用私有正式签名的Release覆盖升级，无卸载或清除数据；版本5，无Debug标志，启动状态ok（WARM，784ms）。先安装验证过的候选包，随后真实下载发行附件，并核对已安装APK字节与公开文件完全相同；没有把顺序写成先下载再安装 / Upgraded in place with the private Release signer, without uninstall/data clearing; code5, non-debuggable, startup ok (WARM,784ms). The verified candidate was installed first, then public downloads were checked against the exact installed bytes.
+- [下载与文件核验 / Download evidence](logs/v050-delivery.txt)。只提取已安装代码APK核对，不读取真实记录UI或数据库 / Only installed APK code was retrieved for comparison, not journal UI or databases.
+
+Google公开配置、审核和真实双向联调，以及真实人声采集/识别准确率，仍按上文列为未验收。发布成功不改变这些限制。
+Public Google setup/review/live sync and real microphone/speech accuracy remain unaccepted. Publication does not change those limits.

@@ -1,0 +1,10 @@
+Public GitHub downloads verified. No authenticated account or personal data accessed.
+daily-3-minutes-0.5.0-beta.1.apk  SHA256 0dd9b012f9bf5fe30da6122e1aa76e8f096d6302ff099b87abf8f7d0cb11448b
+daily-3-minutes-0.5.0-beta.1-source.zip  SHA256 22eb94cbe97a698c40db0fef06eda4010b1f7785bda578ca7e98286bcc9542af
+SHA256SUMS.txt  SHA256 7e665c3bc488df9903aadd16a28699eb895ca48711db725f08068ae4f934b7c7
+Installed production APK bytes equal the public downloaded APK.
+All 181 source files match tag a70338c9d2b3797959f5e9bdfa4c862e01e2657d under Git line-ending rules.
+
+Honor 90: in-place upgrade succeeded; versionCode5/versionName0.5.0-beta.1; non-debuggable.
+Startup Status ok, WARM, TotalTime784ms. No personal records inspected.
+Hosted CI40114539308: completed success.
