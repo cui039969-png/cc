@@ -15,6 +15,9 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+          log-accepted-android-sdk-licenses: false
       - run: sdkmanager "platforms;android-36" "build-tools;35.0.0"
       - uses: gradle/actions/setup-gradle@v4
       - run: chmod +x gradlew
@@ -37,3 +40,5 @@ jobs:
           name: development-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 14
+
+warning: in the working copy of '.github/workflows/android-ci.yml', CRLF will be replaced by LF the next time Git touches it
