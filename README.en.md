@@ -8,10 +8,10 @@ A local-first Android learning journal: what did I truly learn today, what remai
 
 | Section | Content |
 | --- | --- |
-| APK | The matching version's APK in [GitHub Releases](https://github.com/cui039969-png/cc/releases) |
-| Current development version | `0.4.0-beta.1`; testing stage, Google public authorization awaiting configuration and verification |
+| APK | [v0.4.0-beta.1 pre-release APK](https://github.com/cui039969-png/cc/releases/download/v0.4.0-beta.1/daily-3-minutes-0.4.0-beta.1.apk); [release notes and checksums](https://github.com/cui039969-png/cc/releases/tag/v0.4.0-beta.1) |
+| Current pre-release | `0.4.0-beta.1` published; Google public authorization awaiting configuration and verification |
 | Stable release | Not announced; a beta is not presented as completed public Google integration |
-| Matching source | The same version's tag and source ZIP; [current source](https://github.com/cui039969-png/cc) |
+| Matching source | [Versioned source ZIP](https://github.com/cui039969-png/cc/releases/download/v0.4.0-beta.1/daily-3-minutes-0.4.0-beta.1-source.zip); [version tag](https://github.com/cui039969-png/cc/tree/v0.4.0-beta.1); [current source](https://github.com/cui039969-png/cc) |
 | Verification | The same release's `SHA256SUMS.txt` and signing notes |
 | Requirements | Android 8.0 / API 26 or later; Google connection also requires working Google services |
 

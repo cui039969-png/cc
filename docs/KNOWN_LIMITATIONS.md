@@ -4,8 +4,8 @@
   Public Google configuration, review and live two-way integration are incomplete; unconfigured builds cannot connect.
 - 完整备份仅手动JSON；不包含Google关联、完成状态和偏好，不提供Drive备份。
   Full backup is manual JSON, excluding Google links, completion and preferences. No Drive backup.
-- 正式发行、公开下载核对和生产应用签名轮换尚待完成，以当前测试报告为准。
-  Formal release, public download verification and production key rotation remain pending; consult the current report.
+- 测试发行、公开下载核对和荣耀90覆盖升级已完成；正式版仍等待Google配置、审核及真实联调。
+  The pre-release, download verification and Honor 90 upgrade are complete; a stable release still awaits Google configuration, review and live integration.
 - 荣耀90合成设备回归42项及JVM81项已通过；Google真实授权与云端联调仍未完成。
   Honor 90 synthetic-device regression (42 tests) and JVM tests (81) passed; live Google authorization and cloud integration remain incomplete.
 

@@ -8,10 +8,10 @@
 
 | 栏目 | 内容 |
 | --- | --- |
-| 安装包 | [GitHub Releases](https://github.com/cui039969-png/cc/releases) 中相应版本的 APK |
-| 当前开发版本 | `0.4.0-beta.1`，测试阶段；Google 公开授权尚待配置及验证 |
+| 安装包 | [v0.4.0-beta.1 测试版 APK](https://github.com/cui039969-png/cc/releases/download/v0.4.0-beta.1/daily-3-minutes-0.4.0-beta.1.apk)；[发行说明与校验值](https://github.com/cui039969-png/cc/releases/tag/v0.4.0-beta.1) |
+| 当前测试版本 | `0.4.0-beta.1` 已发布；Google 公开授权尚待配置及验证 |
 | 正式版 | 尚未宣布；不会把测试版标成 Google 已公开可用的正式版 |
-| 对应源码 | 相同版本标签、源码 ZIP；[当前源码](https://github.com/cui039969-png/cc) |
+| 对应源码 | [本版源码 ZIP](https://github.com/cui039969-png/cc/releases/download/v0.4.0-beta.1/daily-3-minutes-0.4.0-beta.1-source.zip)；[版本标签](https://github.com/cui039969-png/cc/tree/v0.4.0-beta.1)；[当前源码](https://github.com/cui039969-png/cc) |
 | 核验 | 同一发行页的 `SHA256SUMS.txt` 和签名说明 |
 | 要求 | Android 8.0 / API 26 以上；Google 连接另需可用 Google 服务 |
 
