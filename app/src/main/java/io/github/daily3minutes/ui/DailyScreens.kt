@@ -150,7 +150,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlinx.coroutines.launch
 
-private val questionLabels = listOf(
+internal val questionLabels = listOf(
     "今天真正学会了什么？",
     "今天还有什么没弄懂？",
     "明天优先解决哪一件事？",
@@ -161,6 +161,15 @@ fun DailyAppContent(model: DailyViewModel, onFinish: () -> Unit) {
     val state by model.state.collectAsState()
     val snackbar = remember { SnackbarHostState() }
     val context = LocalContext.current
+    val app = context.applicationContext as io.github.daily3minutes.DailyApp
+    val voiceEntries by app.voices.entries.collectAsState(initial = emptyList())
+    val voiceCounts = voiceEntries.filter { it.date == state.editor.date }.groupingBy { it.question }.eachCount()
+    val voiceOnlyRecords = voiceEntries.groupBy { it.date }.map { (date, notes) ->
+        DailyRecord(date, "", "", "", notes.minOf { it.createdAt }, notes.maxOf { it.createdAt })
+    }
+    val historyState = state.copy(
+        results = if (state.query.isBlank()) (state.results + voiceOnlyRecords.filter { audio -> state.results.none { it.date == audio.date } }).sortedByDescending { it.date } else state.results,
+        monthRecords = (state.monthRecords + voiceOnlyRecords.filter { it.date.startsWith(state.month.toString()) }).distinctBy { it.date })
     val backupPrefs = remember(context) { context.getSharedPreferences("backup_status", 0) }
     val syncCoordinator = (context.applicationContext as io.github.daily3minutes.DailyApp).sync
     val syncAccount by syncCoordinator.account.collectAsState(initial = null)
@@ -176,7 +185,14 @@ fun DailyAppContent(model: DailyViewModel, onFinish: () -> Unit) {
     }
     val exportPicker = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
         if (uri == null) model.cancelBackup()
-        else model.exportBackup(onSuccess = { count -> backupPrefs.edit().putLong("last_export", System.currentTimeMillis()).putInt("last_count", count).apply() }) { resolver.openOutputStream(uri, "wt") }
+        else model.exportBackup(onSuccess = { count -> backupPrefs.edit().putLong("last_export", System.currentTimeMillis()).putInt("last_count", count).putBoolean("last_audio", false).apply() }) { resolver.openOutputStream(uri, "wt") }
+    }
+    val archiveImport = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri == null) model.cancelBackup() else model.previewImport(archive = app.voiceArchives) { resolver.openInputStream(uri) }
+    }
+    val archiveExport = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) { uri ->
+        if (uri == null) model.cancelBackup() else model.exportBackup(archive = app.voiceArchives,
+            onSuccess = { count -> backupPrefs.edit().putLong("last_export", System.currentTimeMillis()).putInt("last_count", count).putBoolean("last_audio", true).apply() }) { resolver.openOutputStream(uri, "wt") }
     }
 
     LaunchedEffect(state.notice) {
@@ -237,8 +253,8 @@ fun DailyAppContent(model: DailyViewModel, onFinish: () -> Unit) {
                         modifier = Modifier.testTag("history-menu")) {
                         Icon(Icons.Default.Menu, contentDescription = t("历史菜单"))
                     }
-                    if (state.screen == DailyScreen.EDIT) IconButton(onClick = { model.navigate(DailyScreen.HISTORY) }, enabled = enabled) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = t("返回历史记录"))
+                    if (state.focusedQuestion != null || state.screen == DailyScreen.EDIT) IconButton(onClick = { model.back(onFinish) }, enabled = enabled) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = t(if (state.focusedQuestion != null) "返回当天概览" else "返回历史记录"))
                     }
                 },
                 actions = {
@@ -253,7 +269,7 @@ fun DailyAppContent(model: DailyViewModel, onFinish: () -> Unit) {
             )
         },
         bottomBar = {
-          if (!useRail) {
+          if (!useRail && state.focusedQuestion == null) {
             NavigationBar {
                 destinations.forEach { (destination, label, icon) ->
                     val selected = state.screen == destination || (destination == DailyScreen.HISTORY && state.screen == DailyScreen.EDIT)
@@ -284,18 +300,22 @@ fun DailyAppContent(model: DailyViewModel, onFinish: () -> Unit) {
             Crossfade(targetState = state.screen, animationSpec = tween(140), label = "page") { screen ->
               val screenEnabled = enabled && screen == state.screen
               when (screen) {
-                DailyScreen.TODAY, DailyScreen.EDIT -> EditorScreen(state.copy(screen = screen),
-                    onEdit = model::edit,
+                DailyScreen.TODAY, DailyScreen.EDIT -> if (state.focusedQuestion != null) FocusedEditor(state, model, screenEnabled)
+                else EditorScreen(state.copy(screen = screen),
+                    onOpen = model::openQuestion, onDate = model::selectEditorDate, voiceCounts = voiceCounts,
                     onDelete = { confirmDelete = true },
                     onHandoff = { state.handoff?.let { model.navigate(DailyScreen.EDIT, it.date) } },
                     enabled = screenEnabled,
                 )
-                DailyScreen.HISTORY -> HistoryScreen(state,
+                DailyScreen.HISTORY -> HistoryScreen(historyState,
                     onQuery = model::search, onMonth = model::changeMonth,
                     onCurrentMonth = model::currentMonth,
                     onDate = { model.navigate(DailyScreen.EDIT, it) }, enabled = screenEnabled,
-                    syncLinks = visibleSyncLinks, onCompleted = { date, checked -> model.afterSaved { syncCoordinator.setCompleted(date, checked) } })
+                    syncLinks = visibleSyncLinks, voiceCounts = voiceEntries.groupingBy { it.date }.eachCount(),
+                    onCompleted = { date, checked -> model.afterSaved { syncCoordinator.setCompleted(date, checked) } })
                 DailyScreen.SETTINGS -> SettingsScreen(enabled = screenEnabled,
+                    onArchiveExport = { app.voices.finish(); model.beginBackup(export = true) { archiveExport.launch("daily-3-minutes-complete-${java.time.LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"))}.zip") } },
+                    onArchiveImport = { model.beginBackup(export = false) { archiveImport.launch(arrayOf("application/zip", "application/octet-stream")) } },
                     onImport = { model.beginBackup(export = false) { importPicker.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) } },
                     onExport = { model.beginBackup(export = true) { exportPicker.launch("daily-3-minutes-${java.time.LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"))}.json") } },
                     model = model,
@@ -311,17 +331,26 @@ fun DailyAppContent(model: DailyViewModel, onFinish: () -> Unit) {
     if (confirmDelete) AlertDialog(
         onDismissRequest = { confirmDelete = false },
         title = { Text(t("删除此日记录？")) },
-        text = { Text(t("将删除 %s 的三个回答。此操作无法撤销，请确认已保留需要的备份。", state.editor.date)) },
+        text = { Text(t("将删除 %s 的三个回答和本机录音。此操作无法撤销，请确认已保留需要的备份。", state.editor.date)) },
         confirmButton = { TextButton(onClick = { confirmDelete = false; model.deleteCurrent() }) { Text(t("确认删除")) } },
         dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text(t("取消")) } },
     )
+    if (state.quickActions) AlertDialog(onDismissRequest = model::closeQuickActions,
+        title = { Text(t("今天的快捷操作")) }, text = {
+            Column {
+                questionLabels.forEachIndexed { index, label ->
+                    TextButton(onClick = { model.openQuestion(index) }, modifier = Modifier.fillMaxWidth()) { Text(t(label)) }
+                }
+                Text(t("进入独立编辑页后，可录音或使用语音转文字。"), style = MaterialTheme.typography.bodySmall)
+            }
+        }, confirmButton = { TextButton(onClick = model::closeQuickActions) { Text(t("关闭")) } })
     val preview = state.backup as? BackupState.Preview
     if (preview != null) ImportPreviewDialog(preview, onCancel = model::cancelBackup, onImport = model::applyImport)
 }
 
 @Composable
-private fun EditorScreen(state: DailyUiState, onEdit: (Int, String) -> Unit, onDelete: () -> Unit,
-    onHandoff: () -> Unit, enabled: Boolean) {
+private fun EditorScreen(state: DailyUiState, onOpen: (Int) -> Unit, onDate: (String) -> Unit, onDelete: () -> Unit,
+    onHandoff: () -> Unit, enabled: Boolean, voiceCounts: Map<Int, Int>) {
     val context = LocalContext.current
     val dateFormat = DateTimeFormatter.ofPattern(if (AppLocale.language(context) == "zh") "yyyy年M月d日 EEEE" else "EEEE, d MMMM yyyy", AppLocale.locale(context))
     val editor = state.editor
@@ -332,7 +361,7 @@ private fun EditorScreen(state: DailyUiState, onEdit: (Int, String) -> Unit, onD
     ) {
         item {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(LocalDate.parse(editor.date).format(dateFormat), style = MaterialTheme.typography.titleMedium)
+                EditorDateRail(editor.date, state.today, enabled, onDate)
                 if (state.screen == DailyScreen.TODAY) Text(t("记录一点，给明天一个起点。"),
                     style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(
@@ -351,30 +380,23 @@ private fun EditorScreen(state: DailyUiState, onEdit: (Int, String) -> Unit, onD
             }
         }
         items(3) { index ->
-            val text = editor.fields[index]
-            val count = RecordRules.codePointCount(text)
-            val invalid = count > RecordRules.MAX_FIELD_CODE_POINTS
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(t(questionLabels[index]), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Medium)
-                OutlinedTextField(
-                    value = text, onValueChange = { onEdit(index, it) },
-                    modifier = Modifier.fillMaxWidth().testTag("answer-$index").semantics { contentDescription = t(questionLabels[index]) },
-                    enabled = enabled && editor.loaded,
-                    placeholder = { Text(t("写下一点就好")) },
-                    minLines = 3, maxLines = 9, isError = invalid,
-                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Default),
-                    supportingText = {
-                        Text(if (invalid) t("超出上限：%s / 20000 字，请缩短后保存", count) else t("%s / 20000 字", count))
-                    },
-                    shape = RoundedCornerShape(14.dp),
-                )
+            Card(onClick = { onOpen(index) }, enabled = enabled && editor.loaded,
+                modifier = Modifier.fillMaxWidth().testTag("open-question-$index")) {
+                Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(t(questionLabels[index]), style = MaterialTheme.typography.titleMedium)
+                    Text(editor.fields[index].ifBlank { t("点开独立编辑，写下一点就好") },
+                        style = MaterialTheme.typography.bodyLarge, maxLines = 4, overflow = TextOverflow.Ellipsis)
+                    Text(t("独立编辑 · %s 字", RecordRules.codePointCount(editor.fields[index])),
+                        style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                    voiceCounts[index]?.let { count -> Text(t("录音（%s）", count), style = MaterialTheme.typography.labelMedium) }
+                }
             }
         }
         item {
             Text(t("停笔后约 0.8 秒自动保存，也可点右上角“保存”。空白的一天无需补写。"),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        if (editor.exists) item {
+        if (editor.exists || voiceCounts.isNotEmpty()) item {
             TextButton(onClick = onDelete, enabled = enabled) {
                 Icon(Icons.Default.DeleteOutline, contentDescription = null, tint = MaterialTheme.colorScheme.error)
                 Spacer(Modifier.width(8.dp))
@@ -413,7 +435,7 @@ private fun HandoffCard(record: DailyRecord?, onSource: () -> Unit, enabled: Boo
 private fun HistoryScreen(
     state: DailyUiState, onQuery: (String) -> Unit, onMonth: (Long) -> Unit,
     onCurrentMonth: () -> Unit, onDate: (String) -> Unit, enabled: Boolean,
-    syncLinks: Map<String, io.github.daily3minutes.data.SyncLink>, onCompleted: (String, Boolean) -> Unit,
+    syncLinks: Map<String, io.github.daily3minutes.data.SyncLink>, voiceCounts: Map<String, Int>, onCompleted: (String, Boolean) -> Unit,
 ) {
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -476,6 +498,7 @@ private fun HistoryScreen(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
                 Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(record.date, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
+                    voiceCounts[record.date]?.let { Text(t("录音（%s）", it), style = MaterialTheme.typography.labelMedium) }
                     val preview = historyPreview(record, state.query)
                     if (preview.label.isNotEmpty()) Text(t(preview.label), style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -490,7 +513,7 @@ private fun HistoryScreen(
           }
         } else {
             items(days, key = { "handoff-${it.date}" }) { day ->
-                HistoryHandoffCard(day, onDate, enabled, syncLinks[day.date], onCompleted)
+                HistoryHandoffCard(day, onDate, enabled, syncLinks[day.date], voiceCounts[day.date] ?: 0, onCompleted)
             }
         }
     }
@@ -498,12 +521,13 @@ private fun HistoryScreen(
 
 @Composable
 private fun HistoryHandoffCard(day: HistoryDay, onDate: (String) -> Unit, enabled: Boolean,
-    link: io.github.daily3minutes.data.SyncLink?, onCompleted: (String, Boolean) -> Unit) {
+    link: io.github.daily3minutes.data.SyncLink?, voiceCount: Int, onCompleted: (String, Boolean) -> Unit) {
     Card(onClick = { onDate(day.date) }, enabled = enabled,
         modifier = Modifier.fillMaxWidth().testTag("handoff-day-${day.date}"),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(day.date, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
+            if (voiceCount > 0) Text(t("录音（%s）", voiceCount), style = MaterialTheme.typography.labelMedium)
             day.targetDate?.let { Text(t("交接给 %s", it), style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant) }
             Text(when {
@@ -595,7 +619,8 @@ private fun MonthCalendar(
 }
 
 @Composable
-private fun SettingsScreen(enabled: Boolean, onImport: () -> Unit, onExport: () -> Unit, onMessage: (String) -> Unit, model: DailyViewModel) {
+private fun SettingsScreen(enabled: Boolean, onImport: () -> Unit, onExport: () -> Unit,
+    onArchiveExport: () -> Unit, onArchiveImport: () -> Unit, onMessage: (String) -> Unit, model: DailyViewModel) {
     val context = LocalContext.current
     val scheduler = remember(context) { ReminderScheduler(context.applicationContext) }
     var reminderEnabled by remember { mutableStateOf(scheduler.isEnabled()) }
@@ -625,6 +650,9 @@ private fun SettingsScreen(enabled: Boolean, onImport: () -> Unit, onExport: () 
         item {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(t("备份与恢复"), style = MaterialTheme.typography.titleMedium)
+                OutlinedButton(onClick = onArchiveExport, enabled = enabled, modifier = Modifier.fillMaxWidth().testTag("export-complete")) { Text(t("导出完整备份（文字和录音）")) }
+                OutlinedButton(onClick = onArchiveImport, enabled = enabled, modifier = Modifier.fillMaxWidth().testTag("import-complete")) { Text(t("恢复完整备份（ZIP）")) }
+                Text(t("完整ZIP包含三问文字及本机录音；JSON仅包含文字，不含录音。完整备份上限1000段录音、音频合计512MiB。"), style = MaterialTheme.typography.bodySmall)
                 Text(t("JSON 文件包含三个回答的完整正文和日期，不包含 Google 授权、同步关联或任务完成状态。请选择可信位置妥善保管。"),
                     style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 OutlinedButton(onClick = onExport, enabled = enabled, modifier = Modifier.fillMaxWidth()) {
@@ -642,6 +670,7 @@ private fun SettingsScreen(enabled: Boolean, onImport: () -> Unit, onExport: () 
                 Text(if (last == 0L) t("尚未导出备份。卸载应用或更换手机前，请先导出文件。") else
                     t("上次备份：%s · %s 条记录", java.time.Instant.ofEpochMilli(last).atZone(java.time.ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")), preferences.getInt("last_count", 0)),
                     style = MaterialTheme.typography.bodySmall, modifier = Modifier.testTag("backup-last-success"))
+                if (last != 0L) Text(t(if (preferences.getBoolean("last_audio", false)) "上次类型：完整ZIP（文字和录音）" else "上次类型：JSON（仅文字）"), style = MaterialTheme.typography.bodySmall)
                 Text(t("换手机恢复：在旧手机导出文件，传到新手机后选择“导入 JSON 备份”。恢复后可重新连接 Google 并核对任务关联。"),
                     style = MaterialTheme.typography.bodySmall)
             }
@@ -764,6 +793,7 @@ private fun ImportPreviewDialog(preview: BackupState.Preview, onCancel: () -> Un
                 verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(t("新增 %s 条 · 冲突 %s 条 · 异常 0 条", preview.summary.added, preview.summary.conflicts.size))
                 Text(t("文件已通过完整校验，确认后才会写入。"), style = MaterialTheme.typography.bodySmall)
+                preview.archive?.let { archive -> Text(t("包含 %s 段录音。跳过冲突日期时也跳过其录音；覆盖时替换文字、按ID合并录音，保留本机已有音频。", archive.manifest.recordings.size), style = MaterialTheme.typography.bodySmall) }
                 ImportChoice(t("跳过已有记录"), selected = !overwrite, onSelect = { overwrite = false })
                 if (preview.summary.conflicts.isNotEmpty()) {
                     ImportChoice(t("覆盖冲突日期"), selected = overwrite, onSelect = { overwrite = true })

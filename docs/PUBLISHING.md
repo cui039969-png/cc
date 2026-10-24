@@ -13,6 +13,10 @@ The script expects those four private files and the `daily3minutes` new-key alia
 
 ## 发布顺序 / Release sequence
 
+v0.5设备回归使用`./scripts/build.ps1 -Synthetic -DeviceTests`，安装ID为`io.github.daily3minutes.verification`。发布APK构建不加`SYNTHETIC_APPLICATION`，必须确认包名仍为`io.github.daily3minutes`。签名脚本默认输出通用候选文件；发布时明确传`-OutputApk`指定新版本文件，不覆盖历史发行包。
+
+v0.5 device checks use the separate verification ID with `-Synthetic -DeviceTests`. Build the public APK without `SYNTHETIC_APPLICATION` and verify the production ID. Pass an explicit new versioned `-OutputApk` when signing; the default is a generic candidate and must not overwrite an old release.
+
 1. 版本、中文英文说明、隐私和实际测试报告对应一致。测试版本不能标成正式版。
    Match versions, both language docs, privacy and actual test reports. Do not label betas stable.
 2. 构建 Debug、Release，运行单元测试、Lint、合成设备测试与迁移测试；不清除真实记录。

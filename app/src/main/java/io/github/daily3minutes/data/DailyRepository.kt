@@ -81,8 +81,9 @@ class DailyRepository(
         val changed = database.writeMutex.withLock { database.withTransaction {
             val previous = dao.get(date)
             val removed = dao.delete(date) > 0
+            val removedVoices = database.voices().deleteDate(date) > 0
             if (removed) database.queuePriority(date, previous?.nextPriority, null)
-            removed
+            removed || removedVoices
         } }
         if (changed) notifyChanged()
     }
@@ -100,7 +101,15 @@ class DailyRepository(
         records.forEach(DailyRecord::validate)
         require(records.map { it.date }.distinct().size == records.size) { "备份中存在重复日期" }
         val result = database.writeMutex.withLock {
-            database.withTransaction {
+            database.withTransaction { importInTransaction(records, overwrite) }
+        }
+        // A completed import refreshes derived views even when all conflicts were skipped.
+        notifyChanged()
+        return result
+    }
+
+    /** Caller holds writeMutex and a Room transaction (shared with voice archive restore). */
+    internal suspend fun importInTransaction(records: List<DailyRecord>, overwrite: Boolean): ImportResult {
                 val existing = dao.all().associateBy { it.date }
                 val conflicts = records.map { it.date }.filter { it in existing }.sorted()
                 for (record in records) {
@@ -110,15 +119,10 @@ class DailyRepository(
                         database.queuePriority(record.date, old?.nextPriority, record.nextPriority)
                     }
                 }
-                ImportResult(records.count { it.date !in existing }, conflicts)
-            }
-        }
-        // A completed import refreshes derived views even when all conflicts were skipped.
-        notifyChanged()
-        return result
+                return ImportResult(records.count { it.date !in existing }, conflicts)
     }
 
-    private suspend fun notifyChanged() {
+    internal suspend fun notifyChanged() {
         try {
             onChanged()
         } catch (cancellation: CancellationException) {

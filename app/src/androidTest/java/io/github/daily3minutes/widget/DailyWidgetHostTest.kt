@@ -23,6 +23,7 @@ import android.widget.TextView
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -86,8 +87,13 @@ class DailyWidgetHostTest {
             goal = "", olderGoal = "虚构：更早的目标不能替代最近的空目标")
     }
 
+    @Test fun tallHostScrollsTodaysLongAnswerAndMoreOpensQuestionActions() {
+        host(widthDp = 280, heightDp = 260, fileName = "v050-scroll.png", verifyNavigation = false, verifyScroll = true)
+    }
+
     private fun host(widthDp: Int, fileName: String, verifyNavigation: Boolean, goal: String? = null,
-        verifyMutations: Boolean = false, sourceDaysAgo: Long = 1, olderGoal: String? = null) {
+        verifyMutations: Boolean = false, sourceDaysAgo: Long = 1, olderGoal: String? = null,
+        heightDp: Int = HEIGHT_DP, verifyScroll: Boolean = false) {
         val repository = (context.applicationContext as DailyApp).repository
         val today = LocalDate.now()
         val todayDate = today.toString()
@@ -123,10 +129,10 @@ class DailyWidgetHostTest {
                     val options = Bundle().apply {
                         putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, widthDp)
                         putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, widthDp)
-                        putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, HEIGHT_DP)
-                        putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, HEIGHT_DP)
+                        putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, heightDp)
+                        putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, heightDp)
                         putInt(AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY, AppWidgetProviderInfo.WIDGET_CATEGORY_HOME_SCREEN)
-                        putParcelableArrayList(AppWidgetManager.OPTION_APPWIDGET_SIZES, arrayListOf(SizeF(widthDp.toFloat(), HEIGHT_DP.toFloat())))
+                        putParcelableArrayList(AppWidgetManager.OPTION_APPWIDGET_SIZES, arrayListOf(SizeF(widthDp.toFloat(), heightDp.toFloat())))
                     }
                     assertTrue(
                         "Requires temporary appwidget grantbind for io.github.daily3minutes",
@@ -143,7 +149,7 @@ class DailyWidgetHostTest {
                         setBackgroundColor(Color.WHITE)
                         addView(view, FrameLayout.LayoutParams(
                             (widthDp * density).roundToInt(),
-                            (HEIGHT_DP * density).roundToInt(),
+                            (heightDp * density).roundToInt(),
                             Gravity.CENTER,
                         ))
                     }
@@ -209,11 +215,11 @@ class DailyWidgetHostTest {
                     runBlocking { repository.save(sourceDate, "虚构组件样例", "", "虚构：修改目标") }
                     awaitWidgetText("虚构：修改目标")
                     runBlocking { repository.save(todayDate, "虚构：今日所学", "", "") }
-                    awaitWidgetText("1/3 项已填写 · 虚构：今日所学")
+                    awaitWidgetText("虚构：今日所学")
                     runBlocking { repository.save(todayDate, "", "虚构：今日疑问", "") }
-                    awaitWidgetText("1/3 项已填写 · 虚构：今日疑问")
+                    awaitWidgetText("虚构：今日疑问")
                     runBlocking { repository.save(todayDate, "虚构：今日所学", "虚构：今日疑问", "虚构：明天目标") }
-                    awaitWidgetText("3/3 项已填写 · 虚构：今日所学")
+                    awaitWidgetText("虚构：今日所学")
                     awaitWidgetText("虚构：修改目标")
                     runBlocking { repository.save(todayDate, "", "", "") }
                     awaitWidgetText("已保存空记录")
@@ -228,7 +234,7 @@ class DailyWidgetHostTest {
                         )))
                     }
                     awaitWidgetText("虚构：导入目标")
-                    awaitWidgetText("1/3 项已填写 · 虚构：导入今日目标")
+                    awaitWidgetText("虚构：导入今日目标")
                     onActivity {
                         val view = requireNotNull(widgetView)
                         val image = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
@@ -243,11 +249,54 @@ class DailyWidgetHostTest {
                             DailyRecord(todayDate, "虚构：覆盖导入今日", "", "", 100L, 300L),
                         )), overwrite = true)
                     }
-                    awaitWidgetText("1/3 项已填写 · 虚构：覆盖导入今日")
+                    awaitWidgetText("虚构：覆盖导入今日")
                     awaitWidgetText("虚构：导入目标")
                     runBlocking { repository.delete(sourceDate); repository.delete(todayDate) }
                     awaitWidgetText("还没有交接目标")
                     awaitWidgetText("今天还没填写")
+                }
+
+                if (verifyScroll) {
+                    val text = "虚构长文可滚动阅读。".repeat(45) + "虚构末尾标记"
+                    val first = text.take(400)
+                    val last = text.drop(400)
+                    runBlocking { repository.save(todayDate, text, "", "") }
+                    compose.waitUntil(10_000) {
+                        var found = false
+                        onActivity { found = findText(requireNotNull(widgetView), first) != null }
+                        found
+                    }
+                    onActivity {
+                        val body = requireNotNull(findText(requireNotNull(widgetView), first))
+                        assertTrue("Long answer must wrap across multiple lines", body.lineCount > 1)
+                    }
+                    var tailVisible = false
+                    repeat(24) {
+                        if (!tailVisible) {
+                            onView(org.hamcrest.Matchers.instanceOf(android.widget.ListView::class.java))
+                                .perform(androidx.test.espresso.action.ViewActions.swipeUp())
+                            onActivity { tailVisible = findText(requireNotNull(widgetView), last)?.let { node ->
+                                val bounds = Rect(); node.getGlobalVisibleRect(bounds) && bounds.height() == node.height
+                            } ?: false }
+                        }
+                    }
+                    assertTrue("Actual widget gestures must reach later answer rows", tailVisible)
+                    onActivity {
+                        val view = requireNotNull(widgetView)
+                        val image = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+                        try {
+                            view.draw(Canvas(image))
+                            File(requireNotNull(it.getExternalFilesDir("widget-test")), "v050-widget-longtext.png")
+                                .outputStream().use { stream -> image.compress(Bitmap.CompressFormat.PNG, 100, stream) }
+                        } finally { image.recycle() }
+                    }
+                    onView(withText(last)).check(matches(isDisplayed())).perform(click())
+                    compose.waitUntil(10_000) { runCatching { compose.onNodeWithTag("answer-0").fetchSemanticsNode() }.isSuccess }
+                    onActivity { assertEquals(0, it.intent.getIntExtra("question", -1)) }
+                    onView(withText("更多")).perform(click())
+                    waitForComposeText("进入独立编辑页后，可录音或使用语音转文字。")
+                    onActivity { it.findViewById<ViewGroup>(android.R.id.content).removeView(overlay) }
+                    compose.onNodeWithText("进入独立编辑页后，可录音或使用语音转文字。").assertIsDisplayed()
                 }
 
                 if (verifyNavigation) {
@@ -262,7 +311,7 @@ class DailyWidgetHostTest {
                         activity.findViewById<ViewGroup>(android.R.id.content).removeView(overlay)
                     }
                     awaitComposeText("每天3分钟")
-                    compose.onNodeWithText("今天真正学会了什么？").assertIsDisplayed()
+                    compose.onNodeWithTag("open-question-0").assertIsDisplayed()
                     onActivity { activity ->
                         activity.findViewById<ViewGroup>(android.R.id.content).addView(overlay)
                     }
@@ -292,7 +341,7 @@ class DailyWidgetHostTest {
             runBlocking {
                 if (goal != null || verifyMutations) repository.delete(sourceDate)
                 if (olderGoal != null) repository.delete(olderDate)
-                if (verifyMutations) repository.delete(todayDate)
+                if (verifyMutations || verifyScroll) repository.delete(todayDate)
             }
         }
     }

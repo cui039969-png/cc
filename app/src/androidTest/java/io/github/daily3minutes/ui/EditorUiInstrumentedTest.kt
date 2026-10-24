@@ -13,6 +13,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.ForcedSize
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -91,6 +92,7 @@ class EditorUiInstrumentedTest {
         val stored = runBlocking { repository.get("2026-10-24")!! }
         assertEquals(answers, listOf(stored.learned, stored.unclear, stored.nextPriority))
 
+        showOverview()
         compose.onNodeWithText("历史").performClick()
         compose.waitUntil(5_000) { model.state.value.screen == DailyScreen.HISTORY && !model.state.value.busy }
         compose.onNodeWithTag("daily-search").performTextInput("特殊%_中文")
@@ -115,6 +117,7 @@ class EditorUiInstrumentedTest {
             scrollToAnswer(index)
             compose.onNodeWithTag("answer-$index").assertIsDisplayed()
         }
+        showOverview()
         compose.onNodeWithText("历史").performClick()
         compose.waitUntil(5_000) { model.state.value.screen == DailyScreen.HISTORY }
         compose.onNodeWithText("2026年10月").assertExists()
@@ -175,6 +178,7 @@ class EditorUiInstrumentedTest {
         runBlocking { repository.save("2026-10-22", "虚构长学习".repeat(2_000), unclear, "虚构明日目标") }
         compose.setContent { Daily3Theme { DailyAppContent(model, onFinish = {}) } }
         compose.waitUntil(5_000) { model.state.value.editor.loaded }
+        showOverview()
         compose.onNodeWithText("历史").performClick()
         compose.waitUntil(5_000) { model.state.value.screen == DailyScreen.HISTORY && !model.state.value.busy }
         compose.onNodeWithTag("daily-search").performTextInput("特殊%_中文")
@@ -197,9 +201,11 @@ class EditorUiInstrumentedTest {
         listOf("今日", "历史", "设置").forEach { compose.onNodeWithText(it).assertIsDisplayed() }
         scrollToAnswer(0)
         compose.onNodeWithTag("answer-0").performTextInput("虚构横屏保存")
+        showOverview()
         compose.onNodeWithText("历史").performClick()
         compose.waitUntil(5_000) { model.state.value.screen == DailyScreen.HISTORY && !model.state.value.busy }
         assertEquals("虚构横屏保存", runBlocking { repository.get("2026-10-24") }?.learned)
+        showOverview()
         compose.onNodeWithText("设置").performClick()
         compose.waitUntil(5_000) { model.state.value.screen == DailyScreen.SETTINGS && !model.state.value.busy }
         compose.onNodeWithText("今日").performClick()
@@ -213,6 +219,7 @@ class EditorUiInstrumentedTest {
     @Test fun settingsShowsInstalledVersionAndReviewedSourcesWithoutOpeningADialog() {
         compose.setContent { Daily3Theme { DailyAppContent(model, onFinish = {}) } }
         compose.waitUntil(5_000) { model.state.value.editor.loaded }
+        showOverview()
         compose.onNodeWithText("设置").performClick()
         compose.waitUntil(5_000) { model.state.value.screen == DailyScreen.SETTINGS && !model.state.value.busy }
         compose.onNodeWithTag("daily-settings").performScrollToNode(hasTestTag("app-version"))
@@ -225,14 +232,58 @@ class EditorUiInstrumentedTest {
         compose.onNodeWithText("Quillpad").assertIsDisplayed()
     }
 
-    private fun capture(name: String) {
+    @Test fun fullPageTabsAndDateRailPreserveLongAnswersOnTheirOwnDates() {
+        compose.setContent { Daily3Theme { DailyAppContent(model, onFinish = {}) } }
+        compose.waitUntil(5_000) { model.state.value.editor.loaded }
+        val longText = (1..30).joinToString("\n") { "虚构第${it}行：整理今天学到的知识。" }
+        scrollToAnswer(0)
+        compose.onNodeWithTag("answer-0").performTextInput(longText)
+        scrollToAnswer(1)
+        compose.onNodeWithTag("answer-1").performTextInput("虚构今日疑问")
+        compose.onNodeWithTag("editor-date-days").performScrollToNode(hasTestTag("editor-day-2026-10-23"))
+        compose.onNodeWithTag("editor-day-2026-10-23").performClick()
+        compose.waitUntil(5_000) { model.state.value.editor.date == "2026-10-23" && model.state.value.editor.loaded && !model.state.value.busy }
+        assertEquals(1, model.state.value.focusedQuestion)
+        compose.onNodeWithTag("answer-1").performTextInput("虚构前一天疑问")
+        compose.onNodeWithTag("editor-day-2026-10-24").performClick()
+        compose.waitUntil(5_000) { model.state.value.editor.date == "2026-10-24" && model.state.value.editor.loaded && !model.state.value.busy }
+        compose.onNodeWithTag("answer-1").assertTextContains("虚构今日疑问")
+        scrollToAnswer(0)
+        compose.onNodeWithTag("answer-0").assertTextContains(longText)
+        compose.onNodeWithTag("voice-record").assertIsDisplayed()
+        compose.onNodeWithTag("voice-dictate").assertIsDisplayed()
+        compose.onNodeWithTag("answer-0").performClick()
+        androidx.test.espresso.Espresso.closeSoftKeyboard()
+        capture("v050-focused-editor.png", "focused-editor")
+        showOverview()
+        assertEquals(longText, runBlocking { repository.get("2026-10-24") }!!.learned)
+        assertEquals("虚构前一天疑问", runBlocking { repository.get("2026-10-23") }!!.unclear)
+    }
+
+    private fun capture(name: String, tag: String? = null) {
         val directory = File(ApplicationProvider.getApplicationContext<Context>().cacheDir, "v020-screenshots").apply { mkdirs() }
         File(directory, name).outputStream().use { output ->
-            assertTrue(compose.onRoot().captureToImage().asAndroidBitmap().compress(Bitmap.CompressFormat.PNG, 100, output))
+            val node = if (tag == null) compose.onRoot() else compose.onNodeWithTag(tag)
+            assertTrue(node.captureToImage().asAndroidBitmap().compress(Bitmap.CompressFormat.PNG, 100, output))
+        }
+    }
+
+    private fun showOverview() {
+        if (model.state.value.focusedQuestion != null) {
+            compose.onNodeWithContentDescription("返回当天概览").performClick()
+            compose.waitUntil(5_000) { !model.state.value.busy && model.state.value.focusedQuestion == null }
         }
     }
 
     private fun scrollToAnswer(index: Int) {
-        compose.onNodeWithTag("daily-editor").performScrollToNode(hasTestTag("answer-$index"))
+        if (model.state.value.focusedQuestion == null) {
+            compose.onNodeWithTag("daily-editor").performScrollToNode(hasTestTag("open-question-$index"))
+            compose.onNodeWithTag("open-question-$index").performClick()
+        } else if (model.state.value.focusedQuestion != index) {
+            compose.onNodeWithTag("question-tab-$index").performClick()
+        }
+        compose.waitUntil(5_000) { !model.state.value.busy && model.state.value.focusedQuestion == index }
+        if (!compose.onNodeWithTag("answer-$index").isDisplayed()) compose.onNodeWithTag("answer-$index").performScrollTo()
+        compose.onNodeWithTag("answer-$index").assertIsDisplayed()
     }
 }

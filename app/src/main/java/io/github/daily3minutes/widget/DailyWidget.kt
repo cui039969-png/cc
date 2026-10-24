@@ -43,6 +43,7 @@ import androidx.glance.LocalSize
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
+import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.appWidgetBackground
@@ -82,14 +83,15 @@ import kotlinx.coroutines.sync.withLock
 
 /** Two supported layouts; the host chooses the one fitting its actual dp size. */
 class DailyWidget : GlanceAppWidget() {
-    override val sizeMode = SizeMode.Responsive(setOf(DpSize(140.dp, 150.dp), DpSize(280.dp, 150.dp)))
+    override val sizeMode = SizeMode.Responsive(setOf(DpSize(140.dp, 150.dp), DpSize(280.dp, 150.dp), DpSize(140.dp, 260.dp), DpSize(280.dp, 260.dp)))
     override val stateDefinition = PreferencesGlanceStateDefinition
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        val repository = (context.applicationContext as DailyApp).repository
+        val app = context.applicationContext as DailyApp
+        val repository = app.repository
         val initialDate = LocalDate.now().toString()
         val initial = try {
-            WidgetSnapshot(repository.latestPast(initialDate), repository.get(initialDate))
+            WidgetSnapshot(repository.latestPast(initialDate), repository.get(initialDate), voiceCount = app.voices.db.voices().all().count { it.date == initialDate })
         } catch (cancelled: CancellationException) {
             throw cancelled
         } catch (_: Exception) {
@@ -103,7 +105,8 @@ class DailyWidget : GlanceAppWidget() {
                 combine(
                     repository.observeLatestPast(today.toString()),
                     repository.observe(today.toString()),
-                ) { past, current -> WidgetSnapshot(past, current) }
+                    app.voices.entries,
+                ) { past, current, voices -> WidgetSnapshot(past, current, voiceCount = voices.count { it.date == today.toString() }) }
                     .catch { emit(WidgetSnapshot(failed = true)) }
             }
             val snapshot by records.collectAsState(initial = initial)
@@ -129,6 +132,7 @@ class DailyWidget : GlanceAppWidget() {
         val current = snapshot.today
         val summary = when {
             snapshot.failed -> t("请打开应用查看今天")
+            (current == null || current.isEmpty) && snapshot.voiceCount > 0 -> t("录音（%s）", snapshot.voiceCount)
             current == null -> t("今天还没填写")
             current.isEmpty -> t("已保存空记录")
             else -> {
@@ -146,7 +150,7 @@ class DailyWidget : GlanceAppWidget() {
             // The upper panel always uses the nearest earlier record, even when its goal is empty.
             // Today's answers never replace yesterday's handoff.
             Column(
-                modifier = GlanceModifier.fillMaxWidth().defaultWeight()
+                modifier = GlanceModifier.fillMaxWidth().height(if (LocalSize.current.height >= 260.dp) 74.dp else 44.dp)
                     .cornerRadius(12.dp).background(WIDGET_PAST_PANEL).padding(5.dp),
             ) {
                 Text(
@@ -162,23 +166,47 @@ class DailyWidget : GlanceAppWidget() {
                 )
             }
             Spacer(GlanceModifier.height(6.dp))
-            // The entire lower panel opens today's editor; the history child has its own action.
+            // Collection rows scroll independently; each answer opens its own full editor.
             Column(
                 modifier = GlanceModifier.fillMaxWidth().defaultWeight()
-                    .cornerRadius(12.dp).background(WIDGET_TODAY_PANEL)
-                    .clickable(actionStartActivity(open(context, "today"))).padding(5.dp),
+                    .cornerRadius(12.dp).background(WIDGET_TODAY_PANEL).padding(5.dp),
             ) {
-                Text(
-                    text = t("今天 · %s月%s日", today.monthValue, today.dayOfMonth),
-                    style = TextStyle(color = WIDGET_TEXT, fontSize = 11.sp, fontWeight = FontWeight.Bold),
-                    maxLines = 1,
-                )
-                Text(
-                    text = summary,
-                    modifier = GlanceModifier.fillMaxWidth().defaultWeight(),
-                    style = TextStyle(color = WIDGET_SECONDARY, fontSize = 10.sp),
-                    maxLines = 1,
-                )
+                Row(GlanceModifier.fillMaxWidth()) {
+                    Text(text = t("今天 · %s月%s日", today.monthValue, today.dayOfMonth),
+                        modifier = GlanceModifier.defaultWeight().clickable(actionStartActivity(open(context, "today"))),
+                        style = TextStyle(color = WIDGET_TEXT, fontSize = 11.sp, fontWeight = FontWeight.Bold), maxLines = 1)
+                    Text(text = t("更多"), modifier = GlanceModifier.clickable(actionStartActivity(open(context, "more"))).padding(horizontal = 2.dp),
+                        style = TextStyle(color = WIDGET_BUTTON_TEXT, fontSize = 10.sp), maxLines = 1)
+                }
+                LazyColumn(modifier = GlanceModifier.fillMaxWidth().defaultWeight()) {
+                    if (current == null || current.isEmpty || snapshot.failed) item {
+                        Text(summary, style = TextStyle(color = WIDGET_SECONDARY, fontSize = 11.sp))
+                    } else {
+                        val labels = listOf("学会了什么", "还有什么没弄懂", "明日优先")
+                        listOf(current.learned, current.unclear, current.nextPriority).forEachIndexed { index, answer ->
+                            if (answer.isNotBlank()) {
+                                item {
+                                    Text(t(labels[index]), style = TextStyle(color = WIDGET_SECONDARY, fontSize = 10.sp, fontWeight = FontWeight.Bold))
+                                }
+                                val points = answer.codePointCount(0, answer.length)
+                                val visible = answer.substring(0, answer.offsetByCodePoints(0, minOf(points, 4000)))
+                                // Bound each collection row without breaking a surrogate pair; no stored text is truncated.
+                                var start = 0
+                                while (start < visible.length) {
+                                    val end = visible.offsetByCodePoints(start, minOf(400, visible.codePointCount(start, visible.length)))
+                                    val part = visible.substring(start, end)
+                                    item { Text(part, modifier = GlanceModifier.fillMaxWidth().clickable(
+                                        actionStartActivity(WidgetNavigation.intent(context, "today", index))),
+                                        style = TextStyle(color = WIDGET_TEXT, fontSize = 12.sp)) }
+                                    start = end
+                                }
+                                if (points > 4000) item { Text(t("点开应用查看全文"), modifier = GlanceModifier.clickable(
+                                    actionStartActivity(WidgetNavigation.intent(context, "today", index))),
+                                    style = TextStyle(color = WIDGET_BUTTON_TEXT, fontSize = 11.sp)) }
+                            }
+                        }
+                    }
+                }
                 Row(GlanceModifier.fillMaxWidth()) {
                     Destination(context, t("填写今天"), "today", GlanceModifier.defaultWeight())
                     Spacer(GlanceModifier.width(4.dp))
@@ -204,6 +232,7 @@ class DailyWidget : GlanceAppWidget() {
         val past: DailyRecord? = null,
         val today: DailyRecord? = null,
         val failed: Boolean = false,
+        val voiceCount: Int = 0,
     )
 
     companion object {

@@ -6,4 +6,5 @@
 - Keep applicationId io.github.daily3minutes and JSON schemaVersion 1 stable.
 - Never use destructive Room fallback; export schemas and test real migrations when schemas change.
 - Verify assembleDebug, testDebugUnitTest, lintDebug. Device-dependent results require actual device evidence.
+- For improvement requests follow docs/SELF_REVIEW.md; run device regression with scripts/build.ps1 -Synthetic -DeviceTests, never against personal app data.
 - Do not create a remote repository, push, or publish without separate explicit authorization.

@@ -16,6 +16,47 @@ import org.junit.runner.RunWith
 class SyncMigrationInstrumentedTest {
     private val context: Context get() = ApplicationProvider.getApplicationContext()
 
+    @Test fun schemaTwoUpgradePreservesEveryDiaryAndSyncColumn() = runBlocking {
+        val name = "synthetic-migration-2-3"
+        val schema = org.json.JSONObject(InstrumentationRegistry.getInstrumentation().context.assets
+            .open("io.github.daily3minutes.data.DailyDatabase/2.json").bufferedReader().use { it.readText() }).getJSONObject("database")
+        val tables = listOf("daily_records", "sync_accounts", "sync_links", "sync_operations")
+        fun rows(cursor: android.database.Cursor) = cursor.use {
+            buildList { while (it.moveToNext()) add((0 until it.columnCount).map { column -> it.getString(column) }) }
+        }
+        try {
+            val legacy = object : android.database.sqlite.SQLiteOpenHelper(context, name, null, 2) {
+                override fun onCreate(db: android.database.sqlite.SQLiteDatabase) {
+                    val entities = schema.getJSONArray("entities")
+                    for (i in 0 until entities.length()) {
+                        val entity = entities.getJSONObject(i)
+                        db.execSQL(entity.getString("createSql").replace("$" + "{TABLE_NAME}", entity.getString("tableName")))
+                    }
+                    val setup = schema.getJSONArray("setupQueries")
+                    for (i in 0 until setup.length()) db.execSQL(setup.getString(i))
+                }
+                override fun onUpgrade(db: android.database.sqlite.SQLiteDatabase, old: Int, new: Int) = error("Unexpected legacy upgrade")
+            }
+            val old = legacy.writableDatabase
+            old.execSQL("INSERT INTO daily_records VALUES ('2026-10-24','Synthetic 学习','Synthetic question','Synthetic priority',100,200)")
+            old.execSQL("INSERT INTO sync_accounts VALUES ('synthetic','test@example.invalid','list','2026-10-18',1,99,'READY')")
+            old.execSQL("INSERT INTO sync_links VALUES ('synthetic','2026-10-24','task','Base title',0,1,'2026-10-25','etag','CONFLICT','Remote title',1)")
+            old.execSQL("INSERT INTO sync_operations VALUES ('synthetic','2026-10-24',17,'UPSERT')")
+            val before = tables.associateWith { rows(old.rawQuery("SELECT * FROM $it", null)) }
+            legacy.close()
+            val upgraded = Room.databaseBuilder(context, DailyDatabase::class.java, name)
+                .addMigrations(DailyDatabase.MIGRATION_2_3).build()
+            try {
+                val current = upgraded.openHelper.writableDatabase
+                tables.forEach { assertEquals("Migration changed $it", before[it], rows(current.query("SELECT * FROM $it"))) }
+                assertTrue(upgraded.voices().all().isEmpty())
+                val note = io.github.daily3minutes.audio.VoiceNote(java.util.UUID.randomUUID().toString(), "2026-10-24", 0, 1500, 300, 20, "a".repeat(64))
+                upgraded.voices().insert(note)
+                assertEquals(note, upgraded.voices().get(note.id))
+            } finally { upgraded.close() }
+        } finally { context.deleteDatabase(name) }
+    }
+
     @Test fun schemaOneMigrationRetainsEveryFieldAndCreatesEmptySyncTables() {
         val name = "synthetic-schema-v040"
         try {
@@ -41,7 +82,7 @@ class SyncMigrationInstrumentedTest {
             }
             legacy.close()
             val upgraded = Room.databaseBuilder(context, DailyDatabase::class.java, name)
-                .addMigrations(DailyDatabase.MIGRATION_1_2).build()
+                .addMigrations(DailyDatabase.MIGRATION_1_2, DailyDatabase.MIGRATION_2_3).build()
             upgraded.openHelper.writableDatabase.apply {
                 query("SELECT * FROM daily_records").use {
                     assertTrue(it.moveToFirst())

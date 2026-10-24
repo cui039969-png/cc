@@ -8,10 +8,10 @@ A local-first Android learning journal: what did I truly learn today, what remai
 
 | Section | Content |
 | --- | --- |
-| APK | [v0.4.0-beta.1 pre-release APK](https://github.com/cui039969-png/cc/releases/download/v0.4.0-beta.1/daily-3-minutes-0.4.0-beta.1.apk); [release notes and checksums](https://github.com/cui039969-png/cc/releases/tag/v0.4.0-beta.1) |
-| Current pre-release | `0.4.0-beta.1` published; Google public authorization awaiting configuration and verification |
+| APK | [v0.5.0-beta.1 pre-release APK](https://github.com/cui039969-png/cc/releases/download/v0.5.0-beta.1/daily-3-minutes-0.5.0-beta.1.apk); [release notes and checksums](https://github.com/cui039969-png/cc/releases/tag/v0.5.0-beta.1) |
+| Current pre-release | `0.5.0-beta.1` published; Google public authorization awaiting configuration and verification |
 | Stable release | Not announced; a beta is not presented as completed public Google integration |
-| Matching source | [Versioned source ZIP](https://github.com/cui039969-png/cc/releases/download/v0.4.0-beta.1/daily-3-minutes-0.4.0-beta.1-source.zip); [version tag](https://github.com/cui039969-png/cc/tree/v0.4.0-beta.1); [current source](https://github.com/cui039969-png/cc) |
+| Matching source | [Versioned source ZIP](https://github.com/cui039969-png/cc/releases/download/v0.5.0-beta.1/daily-3-minutes-0.5.0-beta.1-source.zip); [version tag](https://github.com/cui039969-png/cc/tree/v0.5.0-beta.1); [current source](https://github.com/cui039969-png/cc) |
 | Verification | The same release's `SHA256SUMS.txt` and signing notes |
 | Requirements | Android 8.0 / API 26 or later; Google connection also requires working Google services |
 
@@ -19,12 +19,20 @@ Actual uploads and installation verification are recorded on the release page an
 
 ## Features and screenshots
 
-- Three daily answers, autosave after about 800 ms, immediate Save and error feedback.
+- Each question opens a dedicated long-form editor, with a horizontal day rail, month controls and question tabs. Edits save before switching.
+- Local audio attachments, playback and confirmed deletion; system dictation with review before append.
+- Autosave after about 800 ms, immediate Save and error feedback.
 - A calendar and seven daily handoffs. The menu offers all entries or the last 3, 7 or 30 days. Scroll the calendar away and use the handle to restore it.
-- Two widget panels: previous handoff above, today's status and writing action below. Other people may see widget content.
+- Two widget panels: previous handoff above, today's multiline answers and writing actions below. Scroll the lower panel vertically; More opens question actions. Other people may see widget content.
 - Simplified Chinese, English or system language; system dark theme, large text and landscape navigation; optional daily reminder, off by default.
 
-These are **v0.4.0-beta.1 synthetic-data screenshots from Honor 90**. The Google screen accurately shows that configuration is pending:
+The new editor and scrollable widget below are **v0.5.0-beta.1 synthetic screenshots from Honor 90**.
+
+| Full-page editor | Later text after widget scrolling |
+| --- | --- |
+| ![Full editor](docs/screenshots/v050-focused-editor.png) | ![Scrollable widget](docs/screenshots/v050-widget-longtext.png) |
+
+See [editing and audio instructions](docs/EDITING_AND_AUDIO.md). The following history, menu and Google screenshots remain from v0.4; their layouts remain supported. Google configuration is still pending:
 
 | Default history | History menu | Collapsed calendar |
 | --- | --- | --- |
@@ -45,7 +53,7 @@ Use JDK 17, Android SDK Platform 36 and Build Tools 35.0.0. Set `JAVA_HOME` and 
 ```powershell
 ./scripts/doctor.ps1 -Device
 ./gradlew.bat :app:assembleDebug :app:testDebugUnitTest :app:lintDebug
-./scripts/build.ps1 -DeviceTests
+./scripts/build.ps1 -Synthetic -DeviceTests
 ```
 
 Use `./gradlew` on Linux/macOS. Use an ASCII directory if Windows Java test workers cannot load classes from a Chinese path. Debug APKs are in `app/build/outputs/apk/debug/`.
@@ -65,8 +73,9 @@ Google Tasks and the Tasks.org open-source app are separate projects. Sync is no
 
 ## Backup and restore
 
-Settings → Export JSON → choose a trusted location. Transfer the file to a new phone and import it. Import is previewed first, skips existing dates by default and requires a second confirmation to overwrite.
+For recordings, choose Settings → Export full backup (text and audio). Transfer the ZIP and select Restore full backup on the new phone. JSON remains available for text only. Preview skips existing dates by default and requires another confirmation to overwrite.
 
+- Full ZIP includes text and audio, up to 1,000 clips totaling 512 MiB. JSON includes text only.
 - Includes dates, all three answers and entry timestamps. Excludes Google authorization, sync links, completion, language and reminder preferences.
 - JSON is plaintext. No Drive integration or automatic cloud backup in this version. Android system backup is off; export before uninstalling.
 - Keeps `schemaVersion: 1`; up to 10 MiB, 10,000 entries and 20,000 Unicode code points per answer.
@@ -92,7 +101,7 @@ Tests use synthetic entries. Device serials and personal journals are not publis
 | Third-party service components | Google Play services Auth and Google ID under Google terms; optional integration, not described as entirely open-source dependencies |
 | Product references | Tasks.org, Calendar, Compose Samples and others; GPL projects are experience references, with no GPL implementation copied |
 
-Original additions use [Apache-2.0](LICENSE); upstream MIT code is not relicensed. [NOTICE](NOTICE.md) and the [source review](docs/OPEN_SOURCE_REVIEW_0_4_0.md) list sources, versions and uses. Windows maintenance tools are not Android runtime dependencies.
+Original additions use [Apache-2.0](LICENSE); upstream MIT code is not relicensed. [NOTICE](NOTICE.md) and the [source review](docs/OPEN_SOURCE_REVIEW_0_5_0.md) list sources, versions and uses. Windows maintenance tools are not Android runtime dependencies.
 
 ## Updates and contributing
 

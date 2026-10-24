@@ -8,10 +8,10 @@
 
 | 栏目 | 内容 |
 | --- | --- |
-| 安装包 | [v0.4.0-beta.1 测试版 APK](https://github.com/cui039969-png/cc/releases/download/v0.4.0-beta.1/daily-3-minutes-0.4.0-beta.1.apk)；[发行说明与校验值](https://github.com/cui039969-png/cc/releases/tag/v0.4.0-beta.1) |
-| 当前测试版本 | `0.4.0-beta.1` 已发布；Google 公开授权尚待配置及验证 |
+| 安装包 | [v0.5.0-beta.1 测试版 APK](https://github.com/cui039969-png/cc/releases/download/v0.5.0-beta.1/daily-3-minutes-0.5.0-beta.1.apk)；[发行说明与校验值](https://github.com/cui039969-png/cc/releases/tag/v0.5.0-beta.1) |
+| 当前测试版本 | `0.5.0-beta.1` 已发布；Google 公开授权尚待配置及验证 |
 | 正式版 | 尚未宣布；不会把测试版标成 Google 已公开可用的正式版 |
-| 对应源码 | [本版源码 ZIP](https://github.com/cui039969-png/cc/releases/download/v0.4.0-beta.1/daily-3-minutes-0.4.0-beta.1-source.zip)；[版本标签](https://github.com/cui039969-png/cc/tree/v0.4.0-beta.1)；[当前源码](https://github.com/cui039969-png/cc) |
+| 对应源码 | [本版源码 ZIP](https://github.com/cui039969-png/cc/releases/download/v0.5.0-beta.1/daily-3-minutes-0.5.0-beta.1-source.zip)；[版本标签](https://github.com/cui039969-png/cc/tree/v0.5.0-beta.1)；[当前源码](https://github.com/cui039969-png/cc) |
 | 核验 | 同一发行页的 `SHA256SUMS.txt` 和签名说明 |
 | 要求 | Android 8.0 / API 26 以上；Google 连接另需可用 Google 服务 |
 
@@ -19,12 +19,20 @@
 
 ## 功能截图
 
-- 每日三问、约 800ms 自动保存、即时保存及失败提示。
+- 每日三问分别打开独立长文编辑页；横向日期、月份与问题页签切换，切换前保存。
+- 本机录音附件、回放和确认删除；系统语音转文字先预览再追加。
+- 约 800ms 自动保存、即时保存及失败提示。
 - 历史默认月历＋近七天交接；三横菜单切换全部、近三天、七天、三十天。上滑收起日历，点击横条展开。
-- 桌面上下双栏：过去交接目标、今天状态与填写入口。组件内容可能被旁人看到。
+- 桌面上下双栏：过去交接目标、今天多行正文与填写入口；下栏可上下滑动，“更多”进入录音和转文字所在的问题页。组件内容可能被旁人看到。
 - 简体中文、英文、跟随系统；系统深色主题、大字体、横屏侧栏；可选每日提醒默认关闭。
 
-以下为 **v0.4.0-beta.1 荣耀90合成数据截图**。Google画面如实显示尚待配置：
+以下新编辑页和滚动组件为 **v0.5.0-beta.1 荣耀90合成截图**。
+
+| 独立编辑页 | 组件滑动后的后段正文 |
+| --- | --- |
+| ![独立编辑页](docs/screenshots/v050-focused-editor.png) | ![滚动组件](docs/screenshots/v050-widget-longtext.png) |
+
+[日期、录音与编辑操作说明](docs/EDITING_AND_AUDIO.md)。下列历史、菜单和Google截图保留自v0.4，相关布局继续支持；Google仍待配置：
 
 | 默认历史 | 历史菜单 | 日历收起 |
 | --- | --- | --- |
@@ -45,7 +53,7 @@
 ```powershell
 ./scripts/doctor.ps1 -Device
 ./gradlew.bat :app:assembleDebug :app:testDebugUnitTest :app:lintDebug
-./scripts/build.ps1 -DeviceTests
+./scripts/build.ps1 -Synthetic -DeviceTests
 ```
 
 Linux/macOS 使用 `./gradlew`。Windows 中文路径遇到 Java 测试类加载问题时使用英文目录。Debug APK 位于 `app/build/outputs/apk/debug/`。
@@ -65,8 +73,9 @@ Google Tasks 服务和 Tasks.org 开源应用是两个不同项目。同步不�
 
 ## 备份恢复
 
-设置 → 导出 JSON → 选择可信位置。换手机时传输文件，再选择导入；先预览，默认跳过已有日期，覆盖再次确认。
+有录音时：设置 → 导出完整备份（文字和录音）→ 选择可信位置。换手机传输ZIP后选择“恢复完整备份”。只需文字时可继续使用JSON。先预览，默认跳过已有日期，覆盖再次确认。
 
+- 完整ZIP包含文字和录音，最多1000段、音频合计512MiB；JSON仅包含文字。
 - 包含日期、三个完整回答和记录时间；不包含 Google 授权、同步关联、完成状态、语言和提醒偏好。
 - JSON 为明文；本版不接入 Drive，不提供自动云备份。系统自动备份关闭，卸载前主动导出。
 - 保持 `schemaVersion: 1`；上限 10 MiB、10000 条、每个回答 20000 个 Unicode 码点。
@@ -92,7 +101,7 @@ Google Tasks 服务和 Tasks.org 开源应用是两个不同项目。同步不�
 | 第三方服务组件 | Google Play services Auth、Google ID，按 Google 条款提供可选接入，不标为全部开源依赖 |
 | 体验参考 | Tasks.org、Calendar、Compose Samples 等；GPL 项目仅参考体验，未移植 GPL 代码 |
 
-原创新增代码为 [Apache-2.0](LICENSE)，上游 MIT 不被重新授权。[NOTICE](NOTICE.md)与[引用清单](docs/OPEN_SOURCE_REVIEW_0_4_0.md)列明来源、版本及用途。Windows 维护工具不属于手机运行依赖。
+原创新增代码为 [Apache-2.0](LICENSE)，上游 MIT 不被重新授权。[NOTICE](NOTICE.md)与[引用清单](docs/OPEN_SOURCE_REVIEW_0_5_0.md)列明来源、版本及用途。Windows 维护工具不属于手机运行依赖。
 
 ## 更新及贡献
 

@@ -1,5 +1,18 @@
 # 更新记录 / Changelog
 
+## 0.5.0-beta.1 — 2026-10-25 测试发行 / Pre-release
+
+- 独立三问编辑、横向日期行、问题页签和保存保护。
+  Full-page question editing, horizontal dates, question tabs and save guards.
+- 桌面下栏多行滚动和更多入口，保留上栏交接与历史菜单。
+  Multiline widget scrolling and More actions, retaining handoffs and history.
+- 本机录音、播放、系统语音转文字确认追加；完整ZIP备份。
+  Local audio, playback, reviewed system dictation and full ZIP backup.
+- Room schema 3保留旧文字与同步信息，JSON schemaVersion 1不变。
+  Room schema 3 preserves diary and sync data; JSON schemaVersion 1 remains unchanged.
+- 开源对照与可重复自查流程；Google公开接入仍待完成。
+  Source comparisons and repeatable reviews; public Google integration remains pending.
+
 ## 0.4.0-beta.1 — 2026-10-24 测试发行 / Pre-release
 
 - 可选 Google Tasks 双向交接任务同步、独立列表、离线队列、冲突保留与明确授权状态。

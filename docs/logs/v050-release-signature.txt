@@ -1,0 +1,30 @@
+Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): true
+Verified using v3.1 scheme (APK Signature Scheme v3.1): true
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer (minSdkVersion=33, maxSdkVersion=2147483647) certificate DN: CN=Daily 3 Minutes, O=Daily 3 Minutes contributors
+Signer (minSdkVersion=33, maxSdkVersion=2147483647) certificate SHA-256 digest: 51f36b1985c6f65a5946bdb4691e74df864cf5b1c7271cd70357ee380321d0de
+Signer (minSdkVersion=33, maxSdkVersion=2147483647) certificate SHA-1 digest: fa847deb9feb3e379d2f0bd13d666573e4b08359
+Signer (minSdkVersion=33, maxSdkVersion=2147483647) certificate MD5 digest: e840caf1b05a1a7413247fb0ddb7ccd0
+Signer (minSdkVersion=33, maxSdkVersion=2147483647) key algorithm: RSA
+Signer (minSdkVersion=33, maxSdkVersion=2147483647) key size (bits): 3072
+Signer (minSdkVersion=33, maxSdkVersion=2147483647) public key SHA-256 digest: e226be92ed1b862318fbe1c386208f18c20f1217d79c174a194d94ba7494e467
+Signer (minSdkVersion=33, maxSdkVersion=2147483647) public key SHA-1 digest: 5161ba372ae4d0dc60b7c5d1114649cacf92691c
+Signer (minSdkVersion=33, maxSdkVersion=2147483647) public key MD5 digest: 487a596d1ff3d06e9696cc4acdedff09
+Signer (minSdkVersion=24, maxSdkVersion=32) certificate DN: C=US, O=Android, CN=Android Debug
+Signer (minSdkVersion=24, maxSdkVersion=32) certificate SHA-256 digest: be5d092c0e96d342af550eb542d6476f356f4b49a332d710ebcc18b70018d856
+Signer (minSdkVersion=24, maxSdkVersion=32) certificate SHA-1 digest: 8102a06aa42563bd9bbd8ff99838011233f937e9
+Signer (minSdkVersion=24, maxSdkVersion=32) certificate MD5 digest: de260299a1ce3b74423471af47457172
+Signer (minSdkVersion=24, maxSdkVersion=32) key algorithm: RSA
+Signer (minSdkVersion=24, maxSdkVersion=32) key size (bits): 2048
+Signer (minSdkVersion=24, maxSdkVersion=32) public key SHA-256 digest: 3e512e2a2d0fff9dead5a0aef1c1e7d4e1bcbcd35637dc6a36b841594dab4f02
+Signer (minSdkVersion=24, maxSdkVersion=32) public key SHA-1 digest: c150ab9fe4cd04c65357f6bdf91f4cbd84f466bd
+Signer (minSdkVersion=24, maxSdkVersion=32) public key MD5 digest: 29ff87c38a610b472761e03a3e06c355
+
+Algorithm       Hash                                                                   Path
+---------       ----                                                                   ----
+SHA256          0DD9B012F9BF5FE30DA6122E1AA76E8F096D6302FF099B87ABF8F7D0CB11448B       D:\文档\ChatGPT\开发\daily-3-min…

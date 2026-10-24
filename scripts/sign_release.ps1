@@ -11,7 +11,7 @@ if ($signingRoot.StartsWith($projectRoot + [IO.Path]::DirectorySeparatorChar, [S
     throw 'Signing material must be stored outside the repository.'
 }
 if (-not $UnsignedApk) { $UnsignedApk = Join-Path $projectRoot 'app/build/outputs/apk/release/app-release-unsigned.apk' }
-if (-not $OutputApk) { $OutputApk = Join-Path $projectRoot '.local/delivery/daily-3-minutes-0.4.0-beta.1.apk' }
+if (-not $OutputApk) { $OutputApk = Join-Path $projectRoot '.local/delivery/app-release-signed.apk' }
 $apkInput = [IO.Path]::GetFullPath($UnsignedApk)
 $apkOutput = [IO.Path]::GetFullPath($OutputApk)
 if ($apkInput -eq $apkOutput) { throw 'Input and output APK paths must differ.' }

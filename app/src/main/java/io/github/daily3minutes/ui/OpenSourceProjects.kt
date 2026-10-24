@@ -22,7 +22,9 @@ val openSourceProjects = listOf(
     OpenSourceProject("Favorite Apps Widget", "https://github.com/chrimaeon/favorite-apps-widget",
         "Apache-2.0 · 对比组件入口、长文字摘要和主题。"),
     OpenSourceProject("Quillpad", "https://github.com/quillpad/quillpad",
-        "GPL-3.0 · 仅参考公开功能介绍中的搜索和备份体验，未移植代码。"),
+        "GPL-3.0 · 参考录音附件和ZIP备份体验，未移植代码。"),
     OpenSourceProject("Fossify Notes", "https://github.com/FossifyOrg/Notes",
-        "GPL-3.0 · 仅参考公开功能介绍中的简洁记录体验，未移植代码。"),
+        "GPL-3.0 · 参考简洁记录、自动保存和桌面组件体验，未移植代码。"),
+    OpenSourceProject("Markor", "https://github.com/gsantner/markor",
+        "Apache-2.0 · 参考长文独立编辑体验，未移植代码或新增依赖。"),
 )

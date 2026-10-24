@@ -1,4 +1,4 @@
-param([switch]$DeviceTests, [switch]$AlarmProbe, [string]$SigningDirectory = '')
+param([switch]$DeviceTests, [switch]$AlarmProbe, [switch]$Synthetic, [string]$SigningDirectory = '')
 if ($AlarmProbe) { $DeviceTests = $true }
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path $PSScriptRoot -Parent
@@ -25,6 +25,8 @@ if ($IsWindows -or $env:OS -eq 'Windows_NT') { $env:ADB_USB_LEGACY = '1' }
 $tasks = @(':app:assembleDebug', ':app:testDebugUnitTest', ':app:lintDebug')
 if ($DeviceTests) { $tasks += ':app:assembleDebugAndroidTest' }
 $extraArguments = @()
+if ($Synthetic) { $extraArguments += '-PSYNTHETIC_APPLICATION=true' }
+$packageName = if ($Synthetic) { 'io.github.daily3minutes.verification' } else { 'io.github.daily3minutes' }
 if (Test-Path -LiteralPath '.local/local-maven.init.gradle') { $extraArguments += @('--init-script', '.local/local-maven.init.gradle') }
 & ./gradlew.bat @tasks @extraArguments --stacktrace --console=plain
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -47,29 +49,32 @@ if ($DeviceTests) {
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     & $adb install -r -t $testApk
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    & $adb shell appwidget grantbind --package io.github.daily3minutes --user 0
+    & $adb shell appwidget grantbind --package $packageName --user 0
     try {
         & $adb shell input keyevent KEYCODE_WAKEUP
-        $result = & $adb shell am instrument -w -r io.github.daily3minutes.test/io.github.daily3minutes.SyntheticTestRunner 2>&1
+        $result = & $adb shell am instrument -w -r ($packageName + '.test/io.github.daily3minutes.SyntheticTestRunner') 2>&1
         $result | Write-Output
         if ($LASTEXITCODE -ne 0 -or ($result -join "`n") -notmatch 'OK \(\d+ tests?\)') { throw 'Device instrumentation failed; inspect the output above.' }
     } finally {
-        & $adb shell appwidget revokebind --package io.github.daily3minutes --user 0
+        & $adb shell appwidget revokebind --package $packageName --user 0
         if (($result -join "`n") -match 'daily3_initial_notification_permission=denied') {
-            & $adb shell pm revoke --user 0 io.github.daily3minutes android.permission.POST_NOTIFICATIONS
+            & $adb shell pm revoke --user 0 $packageName android.permission.POST_NOTIFICATIONS
+        }
+        if (($result -join "`n") -match 'daily3_initial_microphone_permission=denied') {
+            & $adb shell pm revoke --user 0 $packageName android.permission.RECORD_AUDIO
         }
     }
     if ($AlarmProbe) {
         $probeResult = @()
         try {
-            $probeResult = & $adb shell am instrument -w -r -e alarmProbe true io.github.daily3minutes.test/io.github.daily3minutes.SyntheticTestRunner 2>&1
+            $probeResult = & $adb shell am instrument -w -r -e alarmProbe true ($packageName + '.test/io.github.daily3minutes.SyntheticTestRunner') 2>&1
             $probeResult | Write-Output
             if ($LASTEXITCODE -ne 0 -or ($probeResult -join "`n") -notmatch 'alarm_probe=PASS:') {
                 throw 'The bounded alarm observation did not confirm delivery. Inspect the result; inexact alarms may be delayed by system policy.'
             }
         } finally {
             if (($probeResult -join "`n") -match 'daily3_initial_notification_permission=denied') {
-                & $adb shell pm revoke --user 0 io.github.daily3minutes android.permission.POST_NOTIFICATIONS
+                & $adb shell pm revoke --user 0 $packageName android.permission.POST_NOTIFICATIONS
             }
         }
     }

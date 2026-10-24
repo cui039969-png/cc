@@ -244,3 +244,55 @@ Google 任务日期：%1$s	Google task date: %1$s
 该日期无法转换为 Google 任务日期，回答仍保留在本地。	This date cannot be used for a Google task. The answer is kept locally.
 超出上限：%1$s / 20000 字，请缩短后保存	Over limit: %1$s / 20,000 characters. Shorten before saving
 %1$s / 20000 字	%1$s / 20,000 characters
+
+返回当天概览	Back to day overview
+学会了什么	What I learned
+还有什么没弄懂	Still unclear
+今天	Today
+选择日期	Choose a date
+确定	OK
+更多	More
+点开应用查看全文	Open the app to read everything
+点开独立编辑，写下一点就好	Open the full editor and write a little
+独立编辑 · %1$s 字	Open editor · %1$s characters
+今天的快捷操作	Today’s quick actions
+进入独立编辑页后，可录音或使用语音转文字。	Open a question to record audio or dictate text.
+关闭	Close
+开始录音	Record audio
+结束并保存录音	Stop and save
+语音转文字	Dictate text
+录音（%1$s）	Audio (%1$s)
+正在录音；离开应用会结束并保存。单段最多10分钟。	Recording. Leaving the app stops and saves it. Up to 10 minutes per clip.
+录音仅存本机；语音转文字使用系统服务，可能联网。	Audio stays on this device. Dictation uses a system service and may use the internet.
+录音 · %1$s 秒	Audio · %1$s seconds
+停止播放	Stop
+播放	Play
+删除录音	Delete audio
+删除这段录音？	Delete this recording?
+只删除这段本机录音，文字回答保留。	Only this local recording will be deleted. Written answers will remain.
+确认识别文字	Review recognized text
+追加到回答	Append to answer
+未获得麦克风权限，仍可正常打字。	Microphone permission was not granted. You can still type.
+没有识别到文字，请重试或使用键盘输入。	No text was recognized. Try again or type using the keyboard.
+此设备暂不支持语音识别，可使用键盘上的话筒输入。	Speech recognition is unavailable. Try the microphone on your keyboard.
+录音无法播放，请核对文件或恢复备份。	The recording could not play. Check the file or restore a backup.
+删除录音失败，请重试。	The recording could not be deleted. Try again.
+无法开始录音，请检查麦克风权限与可用空间。	Recording could not start. Check microphone permission and free space.
+录音已保存在本机。	Recording saved on this device.
+录音未能保存，可能太短或空间不足，请重试。	Recording could not be saved. It may be too short or storage may be full. Try again.
+日期或问题已改变，未填入语音文字，请重新输入。	The date or question changed. Recognized text was not inserted. Please try again.
+语音文字超出字数上限，未覆盖原有回答。	Recognized text exceeds the character limit. Your existing answer was kept.
+导出完整备份（文字和录音）	Export full backup (text and audio)
+恢复完整备份（ZIP）	Restore full backup (ZIP)
+完整ZIP包含三问文字及本机录音；JSON仅包含文字，不含录音。完整备份上限1000段录音、音频合计512MiB。	The ZIP includes all three answers and local audio. JSON includes text only. A full backup supports up to 1,000 recordings totaling 512 MiB.
+包含 %1$s 段录音。跳过冲突日期时也跳过其录音；覆盖时替换文字、按ID合并录音，保留本机已有音频。	Contains %1$s recordings. Skipping a conflicting date also skips its audio. Overwriting replaces text and merges recordings by ID, keeping existing local audio.
+将删除 %1$s 的三个回答和本机录音。此操作无法撤销，请确认已保留需要的备份。	Delete all three answers and local audio for %1$s? This cannot be undone. Keep a backup of anything you need.
+已录音（%1$s 段）	Recorded audio (%1$s clips)
+上次类型：完整ZIP（文字和录音）	Last format: full ZIP (text and audio)
+上次类型：JSON（仅文字）	Last format: JSON (text only)
+正在听写	Listening
+请说出要追加的文字。系统服务可能联网，最长等待30秒。	Say the text to append. The system service may use the internet. Timeout: 30 seconds.
+结束识别	Finish dictation
+GPL-3.0 · 参考录音附件和ZIP备份体验，未移植代码。	GPL-3.0 · Audio attachments and ZIP backup reference; no code copied.
+GPL-3.0 · 参考简洁记录、自动保存和桌面组件体验，未移植代码。	GPL-3.0 · Simple notes, autosave and widget reference; no code copied.
+Apache-2.0 · 参考长文独立编辑体验，未移植代码或新增依赖。	Apache-2.0 · Full-page writing reference; no code copied or dependencies added.

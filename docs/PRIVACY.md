@@ -14,7 +14,21 @@ JSON 备份是明文，包含全部回答与时间戳，不包含 Google 授权�
 
 测试仅使用明确标注的虚构文本和独立测试数据库。源码、公开 schema 与协议示例不应包含真实记录、私人导出、设备数据库、设备日志、签名密钥或令牌。`scripts/check_sensitive.py` 在本地检查可发布文件、暂存区及当前可达 Git 历史的常见凭据模式、私密文件路径和记录备份 JSON；明确放在测试/fixture 目录并命名为 synthetic 的 JSON fixture 可发布。脚本不上传内容，也不输出匹配到的秘密值。它不能识别任意自然语言中的私人信息，浅克隆也不包含上游更早历史；发布前仍需人工审查变更和将要发布的完整历史。
 
-## English
+## v0.5录音补充 / Audio update
+
+只有主动点击“开始录音”才请求麦克风权限。录音绑定当天所选日期和问题，作为AAC/M4A存放在应用私有目录，元数据保存在本机数据库。切换页面或退到后台会结束并尝试保存，不提供后台常驻录音；本应用不自动上传录音。删除录音有明确确认，删除整日会同时删除其录音。卸载会删除这些本机文件，旧JSON不能恢复音频，请使用完整ZIP。
+
+Microphone permission is requested only after Record audio. AAC/M4A files stay in app-private storage, with date/question metadata in the local database. Changing pages or leaving the foreground stops and attempts to save capture; there is no background recording service or automatic upload. Audio deletion is confirmed; deleting a day deletes its clips too. Uninstalling deletes local audio, which requires a full ZIP rather than the old JSON to restore.
+
+“语音转文字”单独调用设备的系统识别提供方。虽然请求优先离线，该提供方可能联网处理语音并适用其隐私条款；本应用无法保证其离线，也不宣称识别服务为开源。识别文字先预览再追加，不自动替换回答，不自动保留系统识别音频。无法使用时可继续打字。
+
+Dictate text separately invokes the device's system recognition provider. It requests offline preference, but the provider may process speech online under its own privacy terms. Offline behavior and open-source status are not guaranteed. Recognized text is reviewed before appending, and system recognition audio is not automatically retained. Typing remains available if recognition is unavailable.
+
+完整ZIP包含文字和录音，不加密。组件下栏现可滚动展示多行回答，桌面上可能暴露更多正文；请自行决定是否放置组件。测试只使用生成音频和假采集器，没有录下房间里的声音。
+
+Full ZIP backups include text and audio without encryption. Scrollable widgets can expose more answer text on the home screen. Tests use generated audio and fake capture, without recording ambient sound.
+
+## English (original local/Google behavior)
 
 Answers, dates and timestamps are stored in the app-private Room database. Local features need no account. No ads, telemetry or AI service. v0.4 requests network access for optional Google Tasks; it does not request location, contacts, camera, biometric/fingerprint or broad storage access. There is no additional app-level database encryption or password lock.
 

@@ -146,7 +146,11 @@ class HistoryUiInstrumentedTest {
         }
         assertEquals(listOf("虚构二十日学习", "虚构二十日疑问", "虚构二十日目标"), model.state.value.editor.fields)
         for ((index, answer) in model.state.value.editor.fields.withIndex()) {
-            compose.onNodeWithTag("daily-editor").performScrollToNode(hasTestTag("answer-$index"))
+            if (index == 0) {
+                compose.onNodeWithTag("daily-editor").performScrollToNode(hasTestTag("open-question-0"))
+                compose.onNodeWithTag("open-question-0").performClick()
+            } else compose.onNodeWithTag("question-tab-$index").performClick()
+            compose.waitUntil(5_000) { model.state.value.focusedQuestion == index && !model.state.value.busy }
             compose.onNodeWithTag("answer-$index").assertTextContains(answer)
         }
     }
@@ -191,7 +195,9 @@ class HistoryUiInstrumentedTest {
             compose.onNodeWithTag("history-range-${range.name}").assertIsNotDisplayed()
         }
         compose.onNodeWithTag("daily-editor").assertIsDisplayed()
-        compose.onNodeWithTag("daily-editor").performScrollToNode(hasTestTag("answer-0"))
+        compose.onNodeWithTag("daily-editor").performScrollToNode(hasTestTag("open-question-0"))
+        compose.onNodeWithTag("open-question-0").performClick()
+        compose.waitUntil(5_000) { model.state.value.focusedQuestion == 0 && !model.state.value.busy }
         compose.onNodeWithTag("answer-0").assertIsDisplayed().assertTextContains("虚构今天学习")
         assertEquals("2026-10-24", model.state.value.editor.date)
     }

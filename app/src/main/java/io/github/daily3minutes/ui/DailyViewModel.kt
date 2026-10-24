@@ -63,7 +63,8 @@ sealed interface BackupState {
     data object Reading : BackupState
     data object Exporting : BackupState
     data object Applying : BackupState
-    data class Preview(val envelope: BackupEnvelope, val summary: ImportPreview) : BackupState
+    data class Preview(val envelope: BackupEnvelope, val summary: ImportPreview,
+        val archive: io.github.daily3minutes.backup.VoiceArchivePreview? = null) : BackupState
 }
 
 data class DailyUiState(
@@ -79,6 +80,8 @@ data class DailyUiState(
     val busy: Boolean = false,
     val backup: BackupState = BackupState.Idle,
     val notice: String? = null,
+    val focusedQuestion: Int? = null,
+    val quickActions: Boolean = false,
 )
 
 /** Narrow ports keep write-race tests independent of an Android/Room runtime. */
@@ -218,11 +221,11 @@ class DailyViewModel internal constructor(
         if (followMonth && old.month != month) observeMonth(month)
     }
 
-    fun navigate(screen: DailyScreen, date: String? = null) {
+    fun navigate(screen: DailyScreen, date: String? = null, question: Int? = null, quick: Boolean = false) {
         transition {
             val currentToday = todayKey()
             updateToday(currentToday)
-            mutable.update { it.copy(screen = screen) }
+            mutable.update { it.copy(screen = screen, focusedQuestion = question?.takeIf { it in 0..2 }, quickActions = quick) }
             when (screen) {
                 DailyScreen.TODAY -> if (mutable.value.editor.date != currentToday) observeEditor(currentToday)
                 DailyScreen.EDIT -> {
@@ -236,12 +239,44 @@ class DailyViewModel internal constructor(
         }
     }
 
-    fun externalDestination(destination: String?, date: String?) {
-        if (date != null) navigate(DailyScreen.EDIT, date)
-        else navigate(if (destination == "history") DailyScreen.HISTORY else DailyScreen.TODAY)
+    fun externalDestination(destination: String?, date: String?, question: Int? = null) {
+        if (date != null) navigate(DailyScreen.EDIT, date, question)
+        else navigate(if (destination == "history") DailyScreen.HISTORY else DailyScreen.TODAY,
+            question = question, quick = destination == "more")
+    }
+
+    fun openQuestion(index: Int) {
+        require(index in 0..2)
+        transition { mutable.update { it.copy(focusedQuestion = index, quickActions = false) } }
+    }
+    fun closeQuestion() { transition { mutable.update { it.copy(focusedQuestion = null) } } }
+    fun closeQuickActions() { mutable.update { it.copy(quickActions = false) } }
+    fun selectEditorDate(date: String) {
+        RecordRules.validateDate(date)
+        transition {
+            updateToday(todayKey())
+            mutable.update { it.copy(screen = if (date == it.today) DailyScreen.TODAY else DailyScreen.EDIT) }
+            if (mutable.value.editor.date != date) observeEditor(date)
+        }
+    }
+    /** Recognition never overwrites typing or a different date/question after returning. */
+    fun acceptDictation(date: String, index: Int, text: String) {
+        if (date != mutable.value.editor.date || index !in 0..2 || mutable.value.focusedQuestion != index) {
+            message("日期或问题已改变，未填入语音文字，请重新输入。")
+            return
+        }
+        val old = mutable.value.editor.fields[index]
+        val combined = if (old.isBlank()) text else old + "\n" + text
+        if (RecordRules.codePointCount(combined) > RecordRules.MAX_FIELD_CODE_POINTS) {
+            message("语音文字超出字数上限，未覆盖原有回答。")
+            return
+        }
+        edit(index, combined)
     }
 
     fun back(finish: () -> Unit) {
+        if (mutable.value.quickActions) { closeQuickActions(); return }
+        if (mutable.value.focusedQuestion != null) { closeQuestion(); return }
         when (mutable.value.screen) {
             DailyScreen.EDIT -> navigate(DailyScreen.HISTORY)
             DailyScreen.HISTORY, DailyScreen.SETTINGS -> navigate(DailyScreen.TODAY)
@@ -406,19 +441,21 @@ class DailyViewModel internal constructor(
         }
     }
 
-    fun previewImport(open: () -> InputStream?) {
+    fun previewImport(archive: io.github.daily3minutes.backup.VoiceArchiveManager? = null, open: () -> InputStream?) {
         if (mutable.value.backup != BackupState.Picking) return
         mutable.update { it.copy(backup = BackupState.Reading) }
         viewModelScope.launch {
+            var media: io.github.daily3minutes.backup.VoiceArchivePreview? = null
             try {
                 val envelope = withContext(ioDispatcher) {
                     val input = open() ?: error("无法打开文件")
-                    input.use { backupManager.parse(it) }
+                    input.use { if (archive == null) backupManager.parse(it) else archive.parse(it).also { parsed -> media = parsed }.envelope }
                 }
-                val preview = backupManager.preview(envelope)
-                mutable.update { it.copy(backup = BackupState.Preview(envelope, preview)) }
-            } catch (cancelled: CancellationException) { throw cancelled
+                val preview = if (media == null) backupManager.preview(envelope) else archive!!.preview(media!!)
+                mutable.update { it.copy(backup = BackupState.Preview(envelope, preview, media)) }
+            } catch (cancelled: CancellationException) { media?.close(); throw cancelled
             } catch (failure: Exception) {
+                media?.close()
                 mutable.update { it.copy(backup = BackupState.Idle,
                     notice = if (failure is io.github.daily3minutes.backup.BackupValidationException)
                         "导入被拒绝：${failure.message}" else "无法读取备份文件，未更改任何记录。") }
@@ -434,7 +471,8 @@ class DailyViewModel internal constructor(
         viewModelScope.launch {
             try {
                 writeGate.withLock {
-                    val result = backupManager.apply(preview.envelope, overwrite)
+                    val result = if (preview.archive == null) backupManager.apply(preview.envelope, overwrite)
+                        else withContext(ioDispatcher) { preview.archive.manager.apply(preview.archive, overwrite) }
                     val date = mutable.value.editor.date
                     // New generation: no pre-import observer or delayed writer may restore old data.
                     observeEditor(date)
@@ -444,23 +482,23 @@ class DailyViewModel internal constructor(
                 }
             } catch (cancelled: CancellationException) { throw cancelled
             } catch (_: Exception) { message("导入失败，事务已回滚，未更改记录。")
-            } finally { finishBackup() }
+            } finally { preview.archive?.close(); finishBackup() }
         }
     }
 
-    fun exportBackup(onSuccess: (Int) -> Unit = {}, open: () -> OutputStream?) {
+    fun exportBackup(onSuccess: (Int) -> Unit = {}, archive: io.github.daily3minutes.backup.VoiceArchiveManager? = null, open: () -> OutputStream?) {
         if (mutable.value.backup != BackupState.Exporting) return
         viewModelScope.launch {
             try {
                 writeGate.withLock {
                     val records = repository.all()
-                    withContext(ioDispatcher) {
-                        val json = backupManager.export(records)
+                    val count = withContext(ioDispatcher) {
                         val output = open() ?: error("无法写入文件")
-                        output.bufferedWriter(Charsets.UTF_8).use { it.write(json) }
+                        if (archive == null) { output.bufferedWriter(Charsets.UTF_8).use { it.write(backupManager.export(records)) }; records.size }
+                        else output.use { archive.export(it) }
                     }
-                    runCatching { onSuccess(records.size) }
-                    message("已导出 ${records.size} 条记录。请妥善保存备份。")
+                    runCatching { onSuccess(count) }
+                    message("已导出 $count 条记录。请妥善保存备份。")
                 }
             } catch (cancelled: CancellationException) { throw cancelled
             } catch (_: Exception) { message("导出失败，目标文件可能不完整，请重新导出。")
@@ -469,6 +507,7 @@ class DailyViewModel internal constructor(
     }
 
     private fun finishBackup() {
+        (mutable.value.backup as? BackupState.Preview)?.archive?.close()
         mutable.update { it.copy(backup = BackupState.Idle) }
         refreshToday()
     }

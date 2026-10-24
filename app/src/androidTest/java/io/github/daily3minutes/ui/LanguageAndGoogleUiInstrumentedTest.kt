@@ -31,10 +31,12 @@ class LanguageAndGoogleUiInstrumentedTest {
     @Test fun englishEditorAndHistoryMenuAreTranslatedButSyntheticAnswerIsKept() {
         context.getSharedPreferences("appearance", 0).edit().putString("language", "en").commit()
         compose.activityRule.scenario.recreate()
+        compose.onNodeWithTag("open-question-0").performClick()
         compose.onNodeWithTag("answer-0").performTextInput("合成答案 stays unchanged 😀")
         compose.onNodeWithText("What did I truly learn today?").assertIsDisplayed()
         compose.onNodeWithTag("answer-0").assertTextContains("合成答案 stays unchanged 😀")
         compose.onNodeWithText("Save", useUnmergedTree = true).performClick()
+        compose.onNodeWithContentDescription("Back to day overview").performClick()
         compose.onNodeWithText("History", useUnmergedTree = true).performClick()
         compose.onNodeWithTag("history-menu").performClick()
         compose.onNodeWithText("All entries").assertIsDisplayed()

@@ -73,6 +73,50 @@ class EditorConcurrencyTest {
         assertEquals("Synthetic learning", store.rows.value.single().learned)
     }
 
+    @Test fun independentQuestionAndDateChangesFlushTheRightDay() = runTest(dispatcher) {
+        val model = model(); runCurrent()
+        val first = model.state.value.editor.date
+        model.openQuestion(0); advanceUntilIdle()
+        model.edit(0, "Synthetic first-day learning")
+        model.selectEditorDate("2026-10-25"); advanceUntilIdle()
+        assertEquals("Synthetic first-day learning", store.get(first)!!.learned)
+        assertEquals(0, model.state.value.focusedQuestion)
+        assertEquals("", model.state.value.editor.learned)
+        model.openQuestion(2); advanceUntilIdle()
+        model.edit(2, "Synthetic second-day priority")
+        model.selectEditorDate(first); advanceUntilIdle()
+        assertEquals("Synthetic second-day priority", store.get("2026-10-25")!!.nextPriority)
+        assertEquals("Synthetic first-day learning", model.state.value.editor.learned)
+        assertEquals("", model.state.value.editor.nextPriority)
+    }
+
+    @Test fun dictationAppendsAndRejectsAResultForAnotherQuestionOrDate() = runTest(dispatcher) {
+        val model = model(); runCurrent()
+        val date = model.state.value.editor.date
+        model.openQuestion(0); advanceUntilIdle(); model.edit(0, "Typed answer")
+        model.acceptDictation(date, 0, "Recognized words")
+        assertEquals("Typed answer\nRecognized words", model.state.value.editor.learned)
+        model.openQuestion(1); advanceUntilIdle()
+        model.acceptDictation(date, 0, "Stale words")
+        assertEquals("", model.state.value.editor.unclear)
+        model.acceptDictation("2026-10-23", 1, "Wrong date")
+        assertEquals("", model.state.value.editor.unclear)
+    }
+
+    @Test fun aFailedSaveKeepsTheSameIndependentPageAndDate() = runTest(dispatcher) {
+        val model = model(); runCurrent()
+        val date = model.state.value.editor.date
+        model.openQuestion(2); advanceUntilIdle()
+        model.edit(2, "Synthetic unsaved priority"); store.failNextSave = true
+        model.selectEditorDate("2026-10-25"); advanceUntilIdle()
+        assertEquals(date, model.state.value.editor.date)
+        assertEquals(2, model.state.value.focusedQuestion)
+        assertEquals("Synthetic unsaved priority", model.state.value.editor.nextPriority)
+        assertEquals(SaveStatus.ERROR, model.state.value.editor.status)
+        model.selectEditorDate("2026-10-25"); advanceUntilIdle()
+        assertEquals("Synthetic unsaved priority", store.get(date)!!.nextPriority)
+    }
+
     @Test fun externalSyncFreezesInputFlushesAndReloadsCommittedChanges() = runTest(dispatcher) {
         val model = model(); runCurrent()
         model.edit(0, "Keep local learning")

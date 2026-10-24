@@ -64,11 +64,13 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun openIntent(intent: Intent?) {
-        model.externalDestination(intent?.getStringExtra("destination"), intent?.getStringExtra("date"))
+        model.externalDestination(intent?.getStringExtra("destination"), intent?.getStringExtra("date"),
+            intent?.getIntExtra("question", -1)?.takeIf { it in 0..2 })
     }
 
     override fun onResume() {
         super.onResume()
+        (application as DailyApp).voices.setForeground(true)
         model.refreshToday()
         ReminderScheduler(this).reschedule()
         val widgetIds = AppWidgetManager.getInstance(this)
@@ -77,6 +79,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onStop() {
+        (application as DailyApp).voices.setForeground(false)
         model.flushOnBackground()
         super.onStop()
     }

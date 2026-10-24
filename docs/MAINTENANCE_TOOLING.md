@@ -3,6 +3,10 @@
 These are development tools. They are not bundled in the Android application.
 以下仅为开发维护工具，不会打包进手机应用，也不会接触或上传个人日记。
 
+v0.5新增[自主优化与验收流程](SELF_REVIEW.md)，入口为`./scripts/self_review.ps1 -Device`，始终使用独立验证安装。另对照了Google官方Android测试skill、Maestro和Mobile MCP；具体许可证、取舍和未安装状态见[v0.5工具核对](OPEN_SOURCE_REVIEW_0_5_0.md)。
+
+v0.5 adds a [repeatable review workflow](SELF_REVIEW.md), run with `./scripts/self_review.ps1 -Device` in a separate verification installation. The official Android testing skill, Maestro and Mobile MCP were compared; [review notes](OPEN_SOURCE_REVIEW_0_5_0.md) record licenses, choices and their uninstalled status.
+
 | 工具 / Tool | 许可证 / License | 用途 / Purpose | 状态 / Status |
 | --- | --- | --- | --- |
 | [Windows-MCP](https://github.com/CursorTouch/Windows-MCP) | MIT | Windows 状态、应用与文件操作 / Windows state, apps and files | 当前会话已有接口，无需重复安装 / Already connected in this session |

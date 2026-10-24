@@ -165,7 +165,7 @@ object BackupCodec {
     }
 
     /** Prevent recursive-parser stack exhaustion and ambiguous duplicate-object-key semantics. */
-    private fun checkNestingAndDuplicateKeys(content: String) {
+    internal fun checkNestingAndDuplicateKeys(content: String) {
         val scopes = ArrayDeque<JsonScope>()
         var index = 0
         while (index < content.length) {

@@ -9,11 +9,13 @@ android {
     namespace = "io.github.daily3minutes"
     compileSdk = 36
     defaultConfig {
-        applicationId = "io.github.daily3minutes"
+        // Explicit test-only installation keeps all validation data away from the user's app.
+        applicationId = if (providers.gradleProperty("SYNTHETIC_APPLICATION").orNull == "true")
+            "io.github.daily3minutes.verification" else "io.github.daily3minutes"
         minSdk = 26
         targetSdk = 35
-        versionCode = 4
-        versionName = "0.4.0-beta.1"
+        versionCode = 5
+        versionName = "0.5.0-beta.1"
         val googleClient = providers.gradleProperty("GOOGLE_WEB_CLIENT_ID").orElse("").get()
         require(googleClient.matches(Regex("[a-zA-Z0-9.\\-]*"))) { "Invalid Google public client ID" }
         buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleClient\"")

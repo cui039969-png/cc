@@ -1,25 +1,19 @@
-# v0.4 测试阶段已知限制 / Beta limitations
+# v0.5测试阶段已知限制 / Beta limitations
 
-- Google公开客户端、审核和真实账号双向联调未完成；未配置的安装包不能连接Google。
-  Public Google configuration, review and live two-way integration are incomplete; unconfigured builds cannot connect.
-- 完整备份仅手动JSON；不包含Google关联、完成状态和偏好，不提供Drive备份。
-  Full backup is manual JSON, excluding Google links, completion and preferences. No Drive backup.
-- 测试发行、公开下载核对和荣耀90覆盖升级已完成；正式版仍等待Google配置、审核及真实联调。
-  The pre-release, download verification and Honor 90 upgrade are complete; a stable release still awaits Google configuration, review and live integration.
-- 荣耀90合成设备回归42项及JVM81项已通过；Google真实授权与云端联调仍未完成。
-  Honor 90 synthetic-device regression (42 tests) and JVM tests (81) passed; live Google authorization and cloud integration remain incomplete.
+- Google公开客户端、审核和真实双向联调未完成；公开安装包保留明确的不可连接提示。
+  Public Google configuration, review and live two-way testing remain incomplete. The public APK clearly disables unconfigured connection.
+- 录音采集生命周期、生成AAC播放和备份已测；没有录下真实人声验证麦克风硬件，也未验收系统识别准确率、语言模型或联网行为。
+  Capture lifecycle, generated AAC playback and backup are tested; live microphone hardware and system speech accuracy/models/network behavior are not accepted.
+- 系统识别需要可用提供方；离线优先不是离线保证。荣耀90检测到RecognitionService但没有识别Activity，本版增加服务兼容入口；服务本身可能拒绝调用。
+  A recognition provider is required; offline preference is not a guarantee. Honor 90 exposes RecognitionService without a recognition Activity, handled by this release's fallback. The provider may still reject access.
+- 完整ZIP和原有JSON均不加密。ZIP最多1000段、音频512MiB，JSON不含录音；均不含Google授权、同步关联或完成状态。无Drive或自动云备份。
+  ZIP and JSON are unencrypted. ZIP supports 1,000 clips/512 MiB audio; JSON excludes audio. Neither includes Google authorization, links or completion. No Drive/automatic cloud backup.
+- 组件多行正文可被旁人看到。单问展示上限4000码点，超出后点开应用；保存的20000码点回答不截断。长按由启动器管理，应用快捷操作使用“更多”。
+  Widgets expose text to bystanders. Per-question display is capped at 4,000 code points with an app link; stored 20,000-code-point answers are not truncated. The launcher owns long-press; app actions use More.
+- 自动保存有800ms防抖，强制停止或掉电可能丢失未提交输入。音频文件系统与SQLite不具备跨系统掉电原子事务；正常恢复失败回滚，孤立文件整理。
+  Autosave has an 800ms delay. Abrupt termination can lose uncommitted input. Audio files and SQLite do not form a shared crash-atomic transaction; ordinary restore errors roll back and orphan files are reconciled.
+- 荣耀90合成回归55项、JVM84项通过；未测其他品牌、完整TalkBack朗读、真实午夜/物理重启、长期省电行为。Debug合成回归不能冒充Release逐项实测。
+  Honor 90 synthetic regression (55) and JVM tests (84) passed. Other manufacturers, full spoken TalkBack, actual midnight/reboot and long-term battery behavior remain untested. Debug regression is not a claim of identical Release functional testing.
 
-## 以下为0.3历史限制，需结合当前报告 / Historical v0.3 limitations
-- 自动保存防抖 800ms；进程在防抖内被终止仍可能丢失未提交输入。页面显示状态，提供即时保存。
-- JSON 导出是明文，用户应选择可信存放位置。应用没有密码锁或数据库额外加密。
-- 双栏桌面组件展示交接目标与今天回答摘要，旁人可见。
-- MagicOS 及其他系统可能延迟日期组件刷新与每日通知；不使用精确闹钟或常驻前台服务。
-- 已保存的全空记录会保留日期及元数据并显示“空记录”；显式删除仍需确认。
-- 首版使用独立包名和 schema v1；不兼容原 FrictionFreeDiary 数据库/备份。
-- 当前尚未公开源码、正式签名或应用商店分发，未配置线上升级服务。Debug APK 不构成长期升级渠道。
-- 设备测试状态以 TEST_REPORT.md 实际证据为准，未测项目不能视为通过。
-- 荣耀90已测2×2/4×2及冷启动入口；未测Pixel/模拟器、TalkBack逐项朗读、Launcher系统大字号、真实午夜/开机恢复和长期省电延迟。
-- 已通过一次真实非精确闹钟通知投递及受控系统事件恢复测试；这不能替代物理重启、真实午夜或长期省电策略测试。
-- Lint为0错误、36警告、2提示，包含依赖版本、KTX风格及未用资源建议；正式Release签名、商店安装和跨schema升级尚未验证。
-- 0.2.0新增的前台跨日补偿、月末/夏令时与推迟恢复已有注入Clock测试；不等于实际等候午夜或物理重启。宽屏配置回归在荣耀设备上隔离覆盖尺寸，不等于每种平板/Launcher均实测。
-- 0.3.0双栏组件在荣耀设备的真实原生宿主验证140×150/280×150dp和今日实时更新；本轮未截取可能含私人内容的实际Launcher。近7天包含今天；全部模式不隐藏预写未来日期。没有新增任务完成勾选或独立任务数据模型。
+实际发布、下载和安装状态见[本版报告](TEST_REPORT.md)。历史情况见[v0.4](TEST_REPORT_0_4_0.md)、[v0.3](TEST_REPORT_0_3_0.md)，旧限制不作为当前结论。
+See the current report for actual publication, download and installation status. Earlier reports describe earlier releases.

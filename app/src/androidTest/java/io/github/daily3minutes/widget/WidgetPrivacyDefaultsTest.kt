@@ -37,7 +37,7 @@ class WidgetPrivacyDefaultsTest {
     }
 
     @Suppress("DEPRECATION")
-    @Test fun optionalGoogleSyncRequestsNetworkButNoPersonalDataPermissions() {
+    @Test fun microphoneIsDeclaredForExplicitRecordingWithoutUnrelatedPermissions() {
         val requested = context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)
             .requestedPermissions.orEmpty().toSet()
         listOf(
@@ -54,5 +54,7 @@ class WidgetPrivacyDefaultsTest {
             "android.permission.USE_EXACT_ALARM",
         ).forEach { permission -> assertFalse("Unexpected permission: $permission", permission in requested) }
         org.junit.Assert.assertTrue("Google Tasks requires HTTPS", "android.permission.INTERNET" in requested)
+        org.junit.Assert.assertTrue("Explicit recording requires microphone permission", "android.permission.RECORD_AUDIO" in requested)
+        org.junit.Assert.assertNull("No recording starts without an explicit action", (context.applicationContext as io.github.daily3minutes.DailyApp).voices.session.value)
     }
 }
