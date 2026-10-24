@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Daily 3 Minutes</string>
+    <string name="widget_description">View the previous handoff and answer today\'s three questions</string>
+</resources>

@@ -1,0 +1,6 @@
+Initial package check this turn: installed 0.2.0/versionCode2.
+First scripts/build.ps1 -DeviceTests installed 0.3.0/versionCode3 in place successfully.
+The dedicated synthetic sentinel was created AFTER that install, while 0.3.0 was already installed. It will verify a subsequent same-signed 0.3.0 overwrite only.
+No personal records/database were read.
+PASS: dedicated synthetic private file retained across the subsequent 0.3.0 -> 0.3.0 signed overwrite. This is not a personal-record comparison.
+Cleanup: removed dedicated synthetic file only.

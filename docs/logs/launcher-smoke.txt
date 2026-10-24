@@ -1,0 +1,20 @@
+Honor 90 / MagicOS Launcher. Own process killed before each click; bounded wait for the actual destination UI.
+
+Starting: Intent { cmp=com.hihonor.android.launcher/.unihome.UniHomeLauncher }
+Warning: Activity not started, its current task has been brought to the front
+Status: ok
+LaunchState: HOT
+Activity: com.hihonor.android.launcher/.unihome.UniHomeLauncher
+TotalTime: 115
+WaitTime: 152
+Complete
+PASS: Launcher widget opened today after the app process was stopped.
+Starting: Intent { cmp=com.hihonor.android.launcher/.unihome.UniHomeLauncher }
+Warning: Activity not started, its current task has been brought to the front
+Status: ok
+LaunchState: HOT
+Activity: com.hihonor.android.launcher/.unihome.UniHomeLauncher
+TotalTime: 162
+WaitTime: 164
+Complete
+PASS: Launcher widget opened history after the app process was stopped.

@@ -1,0 +1,39 @@
+Date: 2026-10-24, Asia/Shanghai
+Target: Honor 90 / Android 15 / MagicOS 9.0.0
+Method: ADB and fresh UI accessibility snapshots; only known synthetic app records were used.
+
+PASS: three known synthetic answers entered and committed through the real input method.
+PASS: am force-stop, adb install -r and COLD MainActivity start retained all three answers.
+PASS: reminder requests notification permission only after explicit enable action.
+PASS: notification denied; reminder remains off and core records remain available.
+PASS: notification approved; reminder enabled. Switch then disabled and initial permission state restored.
+PASS: two Launcher widget instances rendered simultaneously.
+PASS: compact host bounds 564x666 px, widget content 512x614 px.
+PASS: extra own widget removed with Launcher confirmation; remaining widget resized to four columns.
+PASS: wide host bounds 1128x666 px, widget content 1076x614 px.
+PASS: both Launcher widget actions reached their expected screen after own process death; separate log attached.
+PASS: SAF CreateDocument export produced schema 1 and all three expected answers with valid timestamps.
+PASS: SAF OpenDocument parsed a synthetic file and previewed added=1, conflicts=1, invalid=0.
+PASS: cancel import, reopen same file; preview still added=1, proving cancellation did not write the new row.
+PASS: overwrite selection displayed a separate confirmation, with return-to-preview action.
+PASS: default skip preserved today's answers while importing the earlier synthetic record.
+PASS: actual Launcher immediately displayed imported source date and truncated 2560-character Chinese goal.
+PASS: portrait 1200x2664 and landscape 2664x1200 retained all three saved answers.
+PASS: explicit record deletion displayed confirmation.
+PASS: all synthetic rows deleted via app UI; history displayed its empty state.
+PASS: import the earlier SAF export into the empty app; preview added=1, conflicts=0.
+PASS: answers restored after import.
+PASS: re-export through SAF; deep comparison against original export matched every record field and both timestamps.
+PASS: final synthetic rows and the two known shared-storage test JSON files removed; reminder restored off.
+PASS: actual Launcher returned to its no-history goal state after deletion.
+PASS: temporary keep-awake and rotation settings restored; test APK removed for user 0.
+
+Extended verification:
+PASS: 24 device tests, 0 failures, 0 skipped; reminder fixtures restore original preferences and own notification.
+PASS: real notification privacy, stale callback rejection, not-yet-due rejection, same-day deduplication.
+PASS: controlled boot/date/time/timezone/package-replaced receiver branches rebuild scheduling and enqueue widget recovery.
+PASS: native editable accessibility nodes expose each question name; ACTION_SET_TEXT updates the isolated editor.
+PASS: real inexact AlarmManager dispatched ReminderReceiver; notification observed 4694ms after the scheduled minute.
+
+No user database was extracted. Temporary test artifacts and registry-interface backup are excluded from public source.
+Not exercised here: actual midnight, phone reboot, long-term alarm delivery, TalkBack, Pixel or emulator.

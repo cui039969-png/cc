@@ -1,0 +1,21 @@
+name: 问题反馈 / Bug report
+description: 用合成数据描述问题 / Describe with synthetic data
+body:
+  - type: input
+    id: version
+    attributes:
+      label: 应用版本 / App version
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: 设备与系统 / Device and OS
+      description: 不要填序列号 / Do not include serial numbers
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤、期望与实际结果 / Steps, expected and actual result
+      description: 只用虚构记录，不附个人备份或令牌 / Synthetic entries only; no personal backups or tokens
+    validations:
+      required: true

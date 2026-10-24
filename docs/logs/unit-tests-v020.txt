@@ -1,0 +1,57 @@
+Command: :app:testDebugUnitTest
+Exit code: 0
+
+io.github.daily3minutes.backup.BackupCodecTest: 15 passed
+  PASS exportTimestampMustBeUtcIsoInstant
+  PASS unknownFieldsAndMissingRecordFieldsAreRejected
+  PASS exactlyTenMiBIsAllowedAndExportCountsEscapedUtf8Bytes
+  PASS duplicateObjectKeysAndExcessiveNestingAreRejected
+  PASS schemaVersionIsRequiredAndFutureVersionIsRejected
+  PASS oversizedInputStopsAtFirstByteBeyondLimit
+  PASS directEnvelopeValidationAlsoRejectsInvalidCallerConstructedData
+  PASS validationErrorNeverEchoesPrivateRecordContent
+  PASS roundTripPreservesAllFieldsAndMetadataAndSortsAscending
+  PASS fieldLimitCountsUnicodeCodePointsWithoutTruncation
+  PASS invalidUtf8BrokenJsonAndWrongRootAreRejected
+  PASS emptyBackupIsValid
+  PASS everyFieldMustHaveItsDeclaredJsonType
+  PASS invalidDatesDuplicateDatesAndBadTimestampsAreRejected
+  PASS recordCountLimitRejectsWithoutSilentlyDroppingRows
+io.github.daily3minutes.domain.DailyRulesTest: 5 passed
+  PASS handoffKeepsClosestRecordEvenWhenItsGoalIsEmpty
+  PASS handoffExcludesTodayAndConnectsAcrossMissingDays
+  PASS localMidnightAndZoneChangesOnlyAffectToday
+  PASS leapDayIsStrictAndCanonical
+  PASS emojiCountAsOneCodePointAndUnpairedSurrogatesAreRejected
+io.github.daily3minutes.domain.DayBoundaryTest: 3 passed
+  PASS shanghaiMonthEndHasOneMillisecondRemaining
+  PASS autumnDstDayIsTwentyFiveHours
+  PASS springDstDayIsTwentyThreeHours
+io.github.daily3minutes.domain.HistoryPreviewTest: 6 passed
+  PASS secondFieldHitIsVisibleDespiteLongFirstAnswer
+  PASS newlinesBeforeTheHitDoNotPushItOutOfThePreview
+  PASS distantHitInThirdFieldIncludesShortContextAndLiteralSymbols
+  PASS emptyQueryUsesFirstNonblankAnswerAndKeepsEmptyRecordsMarked
+  PASS emojiAtContextBoundariesRemainsValidUnicode
+  PASS englishCaseIsIgnoredButOriginalSpellingIsKept
+io.github.daily3minutes.reminder.ReminderTimesTest: 6 passed
+  PASS invalidTimeIsRejected
+  PASS lateSameDayAlarmMayDeliverButNeverOnNextDayOrBeforeScheduledTime
+  PASS timeZoneUsesLocalDate
+  PASS beforeTimeSchedulesToday
+  PASS atOrAfterTimeSchedulesTomorrowWithoutCatchup
+  PASS daylightSavingGapAdvancesToValidLocalTime
+io.github.daily3minutes.ui.EditorConcurrencyTest: 11 passed
+  PASS foregroundMonthRolloverFlushesOldDayAndFollowsCurrentMonth
+  PASS importFlushesBeforePreviewAndInvalidatesPreImportInput
+  PASS delayedOldDatabaseReadCannotReplaceJustCommittedAnswers
+  PASS failedSaveBlocksNavigationAndRetryKeepsInput
+  PASS zoneChangeFlushesOldDateBeforeOpeningNewLocalToday
+  PASS backgroundFlushCommitsWithoutWaitingForDebounce
+  PASS newKeystrokeCannotCancelInFlightCommitOrReplaceNewerInput
+  PASS overLimitCodePointsRetainTextAndBlockPartialSave
+  PASS navigationAwaitsPendingDebounceAndDoesNotWriteTheNextDate
+  PASS rolloverDoesNotMoveAnExplicitHistoricalEditorOrBrowsedMonth
+  PASS dayCheckRecoversAfterDateEventWasDeferredByBackupPicker
+
+TOTAL: 46 passed, 0 failed, 0 skipped

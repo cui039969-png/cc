@@ -1,0 +1,5 @@
+PASS: 14 synthetic scanner assertions
+Scanned 98 working files; 197 distinct index/history blobs; 1 local reachable commits.
+LIMITATION: shallow repository; earlier upstream history is unavailable and was not audited.
+LIMITATION: recognizable secret patterns cannot determine whether arbitrary prose contains personal records.
+PASS: no recognized secrets, private artifact paths, or blanket JSON ignore found in the audited scope.

@@ -1,0 +1,10 @@
+Command: adb shell am instrument -w -r -e alarmProbe true io.github.daily3minutes.test/io.github.daily3minutes.SyntheticTestRunner
+Caller restores notification permission after completion.
+
+INSTRUMENTATION_STATUS: daily3_initial_notification_permission=denied
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: alarm_probe=ARMED: real inexact AlarmManager; waiting for ReminderReceiver
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_RESULT: alarm_probe=PASS: Android delivered the inexact alarm and the real receiver posted the notification
+INSTRUMENTATION_RESULT: lateness_ms=4694
+INSTRUMENTATION_CODE: -1

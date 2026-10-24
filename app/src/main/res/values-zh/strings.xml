@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">每天3分钟</string>
+    <string name="widget_description">查看上次交接目标，填写今天的三个问题</string>
+</resources>

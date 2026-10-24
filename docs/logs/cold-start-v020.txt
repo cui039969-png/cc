@@ -1,0 +1,10 @@
+Command: adb shell am start -W -n io.github.daily3minutes/.ui.MainActivity
+Exit code: 0
+After full isolated tests; normal app; no UI records inspected.
+Starting: Intent { cmp=io.github.daily3minutes/.ui.MainActivity }
+Status: ok
+LaunchState: COLD
+Activity: io.github.daily3minutes/.ui.MainActivity
+TotalTime: 2346
+WaitTime: 2349
+Complete

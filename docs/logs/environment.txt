@@ -1,0 +1,142 @@
+$ java -version
+exit=0
+openjdk version "17.0.20.1" 2026-08-18
+OpenJDK Runtime Environment Temurin-17.0.20.1+1 (build 17.0.20.1+1)
+OpenJDK 64-Bit Server VM Temurin-17.0.20.1+1 (build 17.0.20.1+1, mixed mode, sharing)
+
+
+$ adb version
+exit=0
+Android Debug Bridge version 1.0.41
+Version 37.0.1-15733141
+Installed as D:\Android\daily3minutes-sdk\platform-tools\adb.exe
+Running on Windows 10.0.26100
+
+
+$ adb devices -l
+exit=0
+List of devices attached
+
+
+
+$ git remote -v
+exit=0
+
+
+$ git status --short
+exit=0
+D  .github/workflows/build.yml
+ M .gitignore
+D  AI_JSON_IMPORT_GUIDE.md
+ M LICENSE
+ M README.md
+ M app/build.gradle.kts
+ M app/proguard-rules.pro
+ M app/src/main/AndroidManifest.xml
+D  app/src/main/java/com/frictionfree/diary/DiaryApplication.kt
+D  app/src/main/java/com/frictionfree/diary/data/local/Converters.kt
+D  app/src/main/java/com/frictionfree/diary/data/local/DiaryDatabase.kt
+D  app/src/main/java/com/frictionfree/diary/data/local/dao/EntryDao.kt
+D  app/src/main/java/com/frictionfree/diary/data/local/dao/NotebookDao.kt
+D  app/src/main/java/com/frictionfree/diary/data/local/dao/TagDao.kt
+D  app/src/main/java/com/frictionfree/diary/data/local/entities/DiaryEntryEntity.kt
+D  app/src/main/java/com/frictionfree/diary/data/local/entities/EntryTagCrossRef.kt
+D  app/src/main/java/com/frictionfree/diary/data/local/entities/NotebookEntity.kt
+D  app/src/main/java/com/frictionfree/diary/data/local/entities/TagEntity.kt
+D  app/src/main/java/com/frictionfree/diary/data/model/DiaryEntry.kt
+D  app/src/main/java/com/frictionfree/diary/data/model/EntryColor.kt
+D  app/src/main/java/com/frictionfree/diary/data/model/ExportData.kt
+D  app/src/main/java/com/frictionfree/diary/data/model/Notebook.kt
+D  app/src/main/java/com/frictionfree/diary/data/model/Tag.kt
+D  app/src/main/java/com/frictionfree/diary/data/repository/DiaryRepository.kt
+D  app/src/main/java/com/frictionfree/diary/data/repository/SettingsRepository.kt
+D  app/src/main/java/com/frictionfree/diary/data/security/BiometricAuthManager.kt
+D  app/src/main/java/com/frictionfree/diary/data/security/EncryptionHelper.kt
+D  app/src/main/java/com/frictionfree/diary/ui/MainActivity.kt
+D  app/src/main/java/com/frictionfree/diary/ui/adaptive/AdaptiveMainScaffold.kt
+D  app/src/main/java/com/frictionfree/diary/ui/components/BiometricLockScreen.kt
+D  app/src/main/java/com/frictionfree/diary/ui/components/ColorPickerRow.kt
+D  app/src/main/java/com/frictionfree/diary/ui/components/EntryCard.kt
+D  app/src/main/java/com/frictionfree/diary/ui/components/FloatingImportProgressBar.kt
+D  app/src/main/java/com/frictionfree/diary/ui/components/FullScreenPhotoViewer.kt
+D  app/src/main/java/com/frictionfree/diary/ui/components/MarkdownEditorToolbar.kt
+D  app/src/main/java/com/frictionfree/diary/ui/components/MarkdownFormatter.kt
+D  app/src/main/java/com/frictionfree/diary/ui/components/MarkdownRenderer.kt
+D  app/src/main/java/com/frictionfree/diary/ui/components/NotebookIcons.kt
+D  app/src/main/java/com/frictionfree/diary/ui/components/TagChipRow.kt
+D  app/src/main/java/com/frictionfree/diary/ui/components/TagMindMap.kt
+D  app/src/main/java/com/frictionfree/diary/ui/navigation/DiaryNavHost.kt
+D  app/src/main/java/com/frictionfree/diary/ui/navigation/Screen.kt
+D  app/src/main/java/com/frictionfree/diary/ui/screens/calendar/CalendarScreen.kt
+D  app/src/main/java/com/frictionfree/diary/ui/screens/calendar/CalendarViewModel.kt
+D  app/src/main/java/com/frictionfree/diary/ui/screens/editor/EditorScreen.kt
+D  app/src/main/java/com/frictionfree/diary/ui/screens/editor/EditorViewModel.kt
+D  app/src/main/java/com/frictionfree/diary/ui/screens/notebooks/NotebooksScreen.kt
+D  app/src/main/java/com/frictionfree/diary/ui/screens/notebooks/NotebooksViewModel.kt
+D  app/src/main/java/com/frictionfree/diary/ui/screens/onboarding/OnboardingScreen.kt
+D  app/src/main/java/com/frictionfree/diary/ui/screens/settings/SettingsScreen.kt
+D  app/src/main/java/com/frictionfree/diary/ui/screens/settings/SettingsViewModel.kt
+D  app/src/main/java/com/frictionfree/diary/ui/screens/tags/TagsScreen.kt
+D  app/src/main/java/com/frictionfree/diary/ui/screens/tags/TagsViewModel.kt
+D  app/src/main/java/com/frictionfree/diary/ui/screens/timeline/TimelineScreen.kt
+D  app/src/main/java/com/frictionfree/diary/ui/screens/timeline/TimelineViewModel.kt
+D  app/src/main/java/com/frictionfree/diary/ui/theme/Color.kt
+D  app/src/main/java/com/frictionfree/diary/ui/theme/Theme.kt
+D  app/src/main/java/com/frictionfree/diary/ui/theme/Type.kt
+D  app/src/main/java/com/frictionfree/diary/utils/DateFormatters.kt
+D  app/src/main/java/com/frictionfree/diary/utils/DayOneImporter.kt
+D  app/src/main/java/com/frictionfree/diary/utils/FacebookImporter.kt
+D  app/src/main/java/com/frictionfree/diary/utils/HashtagParser.kt
+D  app/src/main/java/com/frictionfree/diary/utils/ImportManager.kt
+D  app/src/main/java/com/frictionfree/diary/utils/JsonExporter.kt
+D  app/src/main/java/com/frictionfree/diary/utils/LocationHelper.kt
+D  app/src/main/java/com/frictionfree/diary/utils/ShareIntentHelper.kt
+D  app/src/main/res/drawable-nodpi/ic_launcher_foreground.png
+D  app/src/main/res/drawable/ic_launcher_background.xml
+D  app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+D  app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+D  app/src/main/res/mipmap-hdpi/ic_launcher.png
+D  app/src/main/res/mipmap-hdpi/ic_launcher_round.png
+D  app/src/main/res/mipmap-mdpi/ic_launcher.png
+D  app/src/main/res/mipmap-mdpi/ic_launcher_round.png
+D  app/src/main/res/mipmap-xhdpi/ic_launcher.png
+D  app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
+D  app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+D  app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
+D  app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+D  app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
+ M app/src/main/res/values/strings.xml
+ M app/src/main/res/values/themes.xml
+ M app/src/main/res/xml/data_extraction_rules.xml
+D  app/src/main/res/xml/file_paths.xml
+D  app/src/main/res/xml/shortcuts.xml
+D  app/src/test/java/com/frictionfree/diary/DateFormattersTest.kt
+D  app/src/test/java/com/frictionfree/diary/DayOneImporterTest.kt
+D  app/src/test/java/com/frictionfree/diary/FacebookImporterTest.kt
+D  app/src/test/java/com/frictionfree/diary/HashtagParserTest.kt
+D  app/src/test/java/com/frictionfree/diary/JsonExporterTest.kt
+D  app/src/test/java/com/frictionfree/diary/MarkdownFormatterTest.kt
+D  app/src/test/java/com/frictionfree/diary/MarkdownRendererTest.kt
+ M gradle.properties
+ M gradle/libs.versions.toml
+A  gradle/wrapper/gradle-wrapper.jar
+MM gradle/wrapper/gradle-wrapper.properties
+A  gradlew
+A  gradlew.bat
+ M settings.gradle.kts
+D  skills/frictionfree-diary-json/SKILL.md
+D  skills/frictionfree-diary-json/agents/openai.yaml
+D  skills/frictionfree-diary-json/assets/example-import.json
+D  skills/frictionfree-diary-json/references/native-format.md
+D  skills/frictionfree-diary-json/scripts/validate_import.py
+?? .github/
+?? AGENTS.md
+?? LICENSE-UPSTREAM
+?? NOTICE.md
+?? app/src/androidTest/
+?? app/src/main/java/
+?? app/src/main/res/drawable/
+?? app/src/main/res/xml/daily_widget_info.xml
+?? app/src/test/
+?? docs/
+?? scripts/

@@ -1,0 +1,246 @@
+# SPDX-License-Identifier: Apache-2.0
+# Chinese application text<TAB>Reviewed English translation. Never translate diary content.
+每天3分钟	Daily 3 Minutes
+今天真正学会了什么？	What did I truly learn today?
+今天还有什么没弄懂？	What do I still not understand today?
+明天优先解决哪一件事？	What is the one thing to tackle first tomorrow?
+今日	Today
+历史	History
+设置	Settings
+历史记录	History
+编辑记录	Edit entry
+保存	Save
+历史范围	History range
+关闭历史菜单	Close history menu
+选择查看范围	Choose a range
+全部记录	All entries
+近3天	Last 3 days
+近7天	Last 7 days
+近30天	Last 30 days
+默认近7天，包含今天。交接按写下目标的日期排列。	The default is the last 7 days, including today. Handoffs are ordered by the date you wrote the goal.
+历史菜单	History menu
+返回历史记录	Back to history
+删除此日记录？	Delete this day's entry?
+将删除 %1$s 的三个回答。此操作无法撤销，请确认已保留需要的备份。	This deletes all three answers for %1$s. This cannot be undone. Keep a backup of anything you need.
+确认删除	Delete
+取消	Cancel
+记录一点，给明天一个起点。	Write a little. Give tomorrow a starting point.
+正在载入	Loading
+已保存	Saved
+尚未填写	Not yet written
+编辑中	Editing
+保存中	Saving
+保存失败	Save failed
+已保存 · 空记录	Saved · Empty entry
+每项最多 20000 字，请缩短超限内容后保存。	Each answer can contain up to 20,000 characters. Shorten the answer before saving.
+请先处理超限内容，再离开或备份。	Shorten the over-limit answer before leaving or backing up.
+未能保存，内容仍保留在页面中。请点“保存”重试。	Your text is still on this page. Tap Save to try again.
+保存失败，尚未离开当前页面。	Saving failed. You are still on this page.
+无法载入记录，请重新打开此日期。	The entry could not be loaded. Reopen this date to try again.
+载入记录失败。	The entry could not be loaded.
+每项最多 %1$s 字；当前 %2$s 字	Up to %1$s characters per answer; %2$s entered
+%1$s / %2$s 字	%1$s / %2$s characters
+写下一点就好	A few words are enough
+停笔后约 0.8 秒自动保存，也可点右上角“保存”。空白的一天无需补写。	Saves about 0.8 seconds after you stop typing. You can also tap Save. You do not need to fill in blank days.
+删除此日记录	Delete this day's entry
+已删除此日记录。	This day's entry was deleted.
+删除失败，记录仍保留。	Deletion failed. The entry is still here.
+上次交接	Previous handoff
+昨日交接	Yesterday's handoff
+昨天交接 · %1$s	Yesterday's handoff · %1$s
+上次交接 · %1$s	Previous handoff · %1$s
+还没有交接目标	No handoff goal yet
+上一条记录未设置明日目标	The previous entry has no goal for tomorrow
+收起目标	Collapse goal
+展开目标	Expand goal
+来源：%1$s	Source: %1$s
+查看来源记录	View source entry
+搜索三个回答	Search all three answers
+清空搜索	Clear search
+搜索失败，请重试。	Search failed. Please try again.
+无法载入日历，请重新切换月份。	The calendar could not be loaded. Try changing the month again.
+展开日历	Expand calendar
+收起日历	Collapse calendar
+搜索结果（%1$s）	Search results (%1$s)
+%1$s交接	%1$s handoffs
+%1$s 至 %2$s · 包含今天	%1$s to %2$s · Includes today
+还没有记录。点日历中的日期，写下你想留下的一点。	No entries yet. Tap a calendar date to write something you want to remember.
+没有找到相关记录，试试其他关键词。	No matching entries. Try another search.
+当天未记录	No entry for this day
+空记录	Empty entry
+未设置明日目标	No goal for tomorrow
+交接给 %1$s	Handoff for %1$s
+点此查看或填写	Tap to view or write
+打开查看完整记录	Open full entry
+学会了	Learned
+还没弄懂	Still unclear
+明日优先	Tomorrow's priority
+上个月	Previous month
+下个月	Next month
+回到本月	Current month
+一	Mon
+二	Tue
+三	Wed
+四	Thu
+五	Fri
+六	Sat
+日	Sun
+，今天	, today
+，有记录	, entry exists
+，未填写	, no entry
+编辑此日期	Edit this date
+备份与恢复	Backup and restore
+JSON 文件包含三个回答的完整正文和日期，不包含 Google 授权、同步关联或任务完成状态。请选择可信位置妥善保管。	The JSON file contains all three answers and their dates. It excludes Google authorization, sync links and task completion status. Keep it in a trusted location.
+导出 JSON 备份	Export JSON backup
+导入 JSON 备份	Import JSON backup
+导入前会先检查文件并预览。默认跳过已有日期；覆盖冲突需要再次确认。	Files are validated and previewed before import. Existing dates are skipped by default. Overwriting requires a second confirmation.
+尚未导出备份。卸载应用或更换手机前，请先导出文件。	No backup exported yet. Export a file before uninstalling or changing phones.
+上次备份：%1$s · %2$s 条记录	Last backup: %1$s · %2$s entries
+换手机恢复：在旧手机导出文件，传到新手机后选择“导入 JSON 备份”。恢复后可重新连接 Google 并核对任务关联。	To move phones, export a file on the old phone, transfer it, then choose Import JSON backup on the new phone. Reconnect Google and check task links after restoring.
+无法打开系统文件选择器，请稍后重试。	The system file picker could not be opened. Try again later.
+无法打开文件	Could not open the file
+无法写入文件	Could not write the file
+无法读取备份文件，未更改任何记录。	The backup could not be read. No entries were changed.
+导入失败，事务已回滚，未更改记录。	Import failed and was rolled back. No entries were changed.
+导入完成，写入 %1$s 条，覆盖 %2$s 条冲突记录。	Import complete: %1$s entries written; %2$s conflicting entries overwritten.
+导入完成，写入 %1$s 条，跳过 %2$s 条冲突记录。	Import complete: %1$s entries written; %2$s conflicting entries skipped.
+已导出 %1$s 条记录。请妥善保存备份。	Exported %1$s entries. Keep your backup safe.
+导出失败，目标文件可能不完整，请重新导出。	Export failed. The destination file may be incomplete. Export again.
+确认覆盖冲突记录？	Overwrite conflicting entries?
+备份中的回答将替换 %1$s 个已有日期的全部内容。请确认当前记录已经备份。	The backup will replace all answers for %1$s existing dates. Back up the current entries first.
+确认覆盖并导入	Overwrite and import
+返回预览	Back to preview
+导入预览	Import preview
+新增 %1$s 条 · 冲突 %2$s 条 · 异常 0 条	%1$s new · %2$s conflicting · 0 invalid
+文件已通过完整校验，确认后才会写入。	The complete file passed validation. Nothing is written until you confirm.
+跳过已有记录	Skip existing entries
+覆盖冲突日期	Overwrite conflicting dates
+冲突日期	Conflicting dates
+确认导入	Import
+每日提醒	Daily reminder
+默认关闭，仅在主动开启时请求通知权限。	Off by default. Notification permission is requested only when you turn it on.
+开启每日提醒	Enable daily reminder
+提醒未开启；记录功能仍可正常使用。	The reminder is off. You can still write entries.
+系统通知已关闭，提醒未开启；记录功能仍可正常使用。	System notifications are disabled. The reminder stays off; entries still work.
+提醒时间  %02d:%02d	Reminder time  %02d:%02d
+按本地时间提醒。系统省电策略可能使通知延后；通知正文不会展示你的记录。	Uses local time. Battery-saving settings may delay notifications. Notification text does not show your entries.
+每日回顾提醒	Daily reflection reminder
+在你选择的时间提醒填写今日三问	A reminder to answer today's three questions at your chosen time
+用一点时间，记下今天的收获与明天的方向。	Take a moment to write what you learned today and where to start tomorrow.
+桌面小组件	Home screen widget
+在桌面长按空白处，进入“小组件”并添加“每天3分钟”。支持紧凑和宽版布局，具体格数由桌面决定。	Long-press an empty area on your home screen, choose Widgets and add Daily 3 Minutes. Compact and wide layouts are supported; cell sizes depend on your launcher.
+请按系统提示完成添加；添加后可在桌面调整大小。	Follow the system prompt to add the widget. You can resize it on the home screen.
+当前桌面不支持一键添加，请长按桌面空白处，进入“小组件”并添加“每天3分钟”。	Your launcher does not support one-tap placement. Long-press the home screen, choose Widgets and add Daily 3 Minutes.
+添加到桌面	Add to home screen
+组件会展示上次记录的目标，桌面可被旁人看到。跨日刷新可能受系统后台策略影响，打开应用后会补充刷新。	The widget shows your previous goal and today's summary, which other people may see. System background limits can delay daily updates; opening the app refreshes it.
+本地功能无需账号，无广告、无遥测。Google Tasks 仅在主动连接后同步。请主动导出需要保留的记录。	Local features need no account. No ads or telemetry. Google Tasks sync starts only after you connect. Export entries you want to keep.
+本次更新：可选 Google Tasks、双语界面、备份说明与公开维护。Google 接入状态请查看专门栏目。	This update adds optional Google Tasks, two interface languages, clearer backup guidance and public maintenance. See the Google section for its availability.
+开源来源与参考	Open-source notices and references
+收起开源来源与参考	Collapse open-source notices
+原有代码保留 MIT 许可，新增代码使用 Apache-2.0。以下项目用于实际改造或对比参考；点击后由浏览器打开 GitHub。	Upstream code retains its MIT license. New code uses Apache-2.0. The following projects are used or reviewed; tap to open their GitHub pages.
+没有可用的浏览器，请安装浏览器后再打开 GitHub。	No browser is available. Install one to open GitHub.
+系统暂时无法打开浏览器，请稍后重试。	The browser could not be opened. Try again later.
+无法打开浏览器，请稍后重试。	The browser could not be opened. Try again later.
+MIT · 工程、主题和月历基础；保留原作者许可。	MIT · Project, theme and calendar foundation; original notices are retained.
+MIT · 对比日历状态与折叠交互，保留本项目月历，未引入新依赖。	MIT · Calendar and collapse interaction reference; no dependency was added.
+Apache-2.0 · 参考横屏导航与设置中展示开源来源的方式。	Apache-2.0 · Reference for landscape navigation and open-source notices in settings.
+Apache-2.0 · 参考输入状态、焦点和键盘交互。	Apache-2.0 · Reference for input state, focus and keyboard interactions.
+Apache-2.0 · 对比组件入口、长文字摘要和主题。	Apache-2.0 · Reference for widget actions, long-text summaries and themes.
+Apache-2.0 · 核对抽屉与列表滚动样例，独立实现历史菜单和日历恢复入口。	Apache-2.0 · Drawer and scrolling samples reviewed; history controls are independently implemented.
+Apache-2.0 · 组件工具栏基础；对比长文本布局。	Apache-2.0 · Widget toolbar foundation and long-text layout reference.
+GPL-3.0 · 仅参考公开功能介绍中的搜索和备份体验，未移植代码。	GPL-3.0 · Search and backup experience reference only; no code was copied.
+GPL-3.0 · 仅参考公开功能介绍中的简洁记录体验，未移植代码。	GPL-3.0 · Simple note-taking experience reference only; no code was copied.
+GPL-3.0 · 本轮对照历史菜单和筛选组织，仅作产品参考，未移植代码。	GPL-3.0 · History navigation and filtering reference only; no code was copied.
+Google Tasks（可选）	Google Tasks (optional)
+只同步“明天优先解决哪一件事”和任务完成状态。另外两个回答不会上传。未连接也能正常使用。	Syncs only tomorrow's priority and task completion. The other two answers are not uploaded. The app works without a connection.
+此测试包尚未配置 Google 公开授权，连接暂不可用。配置和审核完成后会发布可连接版本。	Google public authorization is not configured in this test build, so connection is unavailable. A connectable build will follow configuration and review.
+此设备的 Google 服务暂不可用。本地记录和文件备份仍可使用。	Google services are unavailable on this device. Local entries and file backups still work.
+上次同步：%1$s	Last sync: %1$s
+立即同步	Sync now
+连接 Google Tasks	Connect Google Tasks
+重新授权或调整同步范围	Authorize again or change sync range
+断开连接	Disconnect
+Google 接入说明与进度	Google setup and availability
+Google 连接未完成，记录仍保存在本机。可稍后重试。	Google connection was not completed. Your entries are still on this device. Try again later.
+已连接 Google Tasks，仅同步预览中确认的交接任务和之后的新任务。	Google Tasks is connected. Only the approved handoff range and new tasks will sync.
+Google Tasks 已连接，正在同步交接任务。	Google Tasks is connected. Syncing handoff tasks.
+同步任务	Synced tasks
+确认交接任务同步范围	Confirm handoff sync range
+同步会创建独立的 Daily 3 Minutes 列表。Google 授权界面会提示可管理所有任务，本应用只操作自己的任务。	Sync uses a dedicated Daily 3 Minutes list. Google's permission screen allows management of all tasks; this app operates only on its own tasks.
+将连接 %1$s 条交接目标；超长目标会保留在本地并提示处理。	%1$s handoff goals will be linked. Over-length goals stay local and are flagged for attention.
+本地与云端同时改动时会保留两份供你选择，不自动覆盖。	If both sides change, both versions are kept for you to choose. Neither is silently overwritten.
+选择账号并授权	Choose account and authorize
+断开 Google Tasks？	Disconnect Google Tasks?
+将停止同步。本地回答和云端任务都会保留。若要撤销 Google 授权，可在 Google 账号的第三方连接中移除此应用。	Sync will stop. Local answers and cloud tasks are kept. To revoke authorization, remove this app from your Google Account's third-party connections.
+已断开连接，本地和云端内容均保留。	Disconnected. Local and cloud content is kept.
+删除已解除关联的云端任务？	Delete the detached cloud task?
+将从 Google Tasks 删除 %1$s 对应的任务，不影响本地其他回答。	Delete the Google task linked to %1$s. Other local answers are unaffected.
+云端任务已删除。	The cloud task was deleted.
+云端删除未完成，请检查连接后重试。	Cloud deletion did not finish. Check your connection and try again.
+等待同步	Waiting to sync
+正在同步	Syncing
+同步完成	Sync complete
+部分任务需要处理，请查看下方状态	Some tasks need attention. Check their status below.
+授权已失效或被撤销，请重新授权	Authorization expired or was revoked. Authorize again.
+云端列表已不存在，请先断开后重新连接	The cloud list no longer exists. Disconnect, then reconnect.
+Google 服务返回错误，请稍后重试	Google returned an error. Try again later.
+当前无法联网，将在网络恢复后重试	Offline. Sync will retry when the network returns.
+两边都有修改，需要选择保留的版本。	Both sides changed. Choose the version to keep.
+本地：%1$s	Local: %1$s
+Google：%1$s	Google: %1$s
+保留本地并同步	Keep local and sync
+采用 Google 版本	Use Google version
+已解除关联，云端任务仍保留。	Detached. The cloud task is kept.
+删除这条云端任务	Delete this cloud task
+云端任务已删除，本地回答仍保留。	The cloud task was deleted. The local answer is kept.
+目标超过 Google 的 1024 字符上限，未上传，也未截断。	The goal exceeds Google's 1,024-character limit. It was neither uploaded nor truncated.
+云端存在同日期的多个任务，请先在 Google Tasks 中整理后重试。	Multiple cloud tasks have this source date. Resolve them in Google Tasks, then retry.
+已完成	Completed
+待完成	To do
+已同步	Synced
+待同步	Pending sync
+Google 任务日期：%1$s	Google task date: %1$s
+暂时无法读取，请打开应用重试	Could not load entries. Open the app to try again.
+请打开应用查看今天	Open the app to view today
+今天还没填写	Nothing written today
+已保存空记录	Empty entry saved
+%1$s/3 项已填写 · %2$s	%1$s/3 answered · %2$s
+今天 · %1$s月%2$s日	Today · %1$s/%2$s
+填写今天	Write today
+语言	Language
+跟随系统	System default
+简体中文	简体中文
+英语	English
+版本与下载	Version and downloads
+查看最新安装包	Latest APK
+查看源码	Source code
+测试版本	Test build
+正式版本	Release build
+不支持此备份版本	This backup version is not supported
+备份 JSON 包含重复字段	The backup JSON contains duplicate fields
+备份 JSON 嵌套层级过深	The backup JSON is nested too deeply
+备份 records 必须是数组	The backup records field must be an array
+备份中存在重复日期	The backup contains duplicate dates
+备份包含无效日期、文本长度或时间戳	The backup contains an invalid date, text length or timestamp
+备份字段结构或类型无效	Invalid backup field structure or type
+备份字符串字段类型无效	A backup string field has the wrong type
+备份导出时间必须是 UTC ISO 时间	The export timestamp must be an ISO timestamp in UTC
+备份整数字段类型无效	A backup integer field has the wrong type
+备份文件不是有效的 JSON	The backup is not valid JSON
+备份文件必须是有效的 UTF-8 文本	The backup must be valid UTF-8 text
+备份文件超过 10 MiB，未导入任何记录	The backup exceeds 10 MiB. No entries were imported
+备份最多允许 10000 条记录	A backup can contain at most 10,000 entries
+备份根字段缺失或包含未知字段	The backup has missing or unknown root fields
+备份根节点必须是对象	The backup root must be an object
+导出数据超过 10 MiB，无法生成可导入的单文件备份	The export exceeds 10 MiB and cannot produce a re-importable single-file backup
+每条记录必须是对象	Each entry must be an object
+记录字段缺失或包含未知字段	An entry has missing or unknown fields
+同一天只能有一条历史记录	Only one entry per date is allowed
+文本包含无效的 Unicode 字符	The text contains invalid Unicode
+日期不是有效的日历日期	The date is not a valid calendar date
+日期年份必须在 0001–9999 之间	The year must be between 0001 and 9999
+日期必须使用 yyyy-MM-dd 格式	The date must use yyyy-MM-dd format
+每个回答最多 20000 字	Each answer can contain at most 20,000 characters
+该日期无法转换为 Google 任务日期，回答仍保留在本地。	This date cannot be used for a Google task. The answer is kept locally.
+超出上限：%1$s / 20000 字，请缩短后保存	Over limit: %1$s / 20,000 characters. Shorten before saving
+%1$s / 20000 字	%1$s / 20,000 characters
